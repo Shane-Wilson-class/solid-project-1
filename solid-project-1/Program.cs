@@ -1,22 +1,33 @@
 ﻿using System;
 using System.IO;
 using LiteDB;
-using RP_Violation;
+using Unity;
 
 namespace solid_project_1
 {
-    internal static class Program
+    public static class Program
     {
+        private static readonly UnityContainer Container = new UnityContainer();
+
         private static void Main()
         {
+            ConfigureServices();
             var tradeStream = File.OpenRead("trades.txt");
-            var tradeProcessor = new TradeProcessor();
+            var tradeProcessor = Container.Resolve<TradeProcessor>();
             tradeProcessor.ProcessTrades(tradeStream);
 
             using (var db = new LiteRepository(@"trades.db"))
             {
                 db.Query<TradeRecord>().ToList().ForEach(Console.WriteLine);
             }
+        }
+
+        private static void ConfigureServices()
+        {
+            Container.RegisterSingleton<ITradeParser, TradeParser>();
+            Container.RegisterSingleton<ITradeStorage, TradeStorage>();
+            Container.RegisterSingleton<ITradeDataProvider, TradeDataProvider>();
+            Container.RegisterType<TradeParser>();
         }
     }
 }

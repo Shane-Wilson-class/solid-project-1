@@ -1,4 +1,4 @@
-﻿namespace RP_Violation
+﻿namespace solid_project_1
 {
     public class TradeRecord
     {
