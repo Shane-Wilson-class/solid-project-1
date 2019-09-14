@@ -33,13 +33,13 @@ namespace RP_Violation
             StoreTrades(trades);
         }
 
-        private IEnumerable<TradeRecord> Parse(IEnumerable<string> lines)
+        private List<TradeRecord> Parse(List<string> lines)
         {
             var trades = new List<TradeRecord>();
             var lineCount = 1;
             foreach (var line in lines)
             {
-                var fields = line.Split(new[] {','});
+                var fields = line.Split(new[] {','}).ToList();
 
                 if (!ValidateTradeData(fields, lineCount))
                 {
@@ -56,7 +56,7 @@ namespace RP_Violation
             return trades;
         }
 
-        private TradeRecord MapTradeDataToTradeRecord(string[] fields)
+        private TradeRecord MapTradeDataToTradeRecord(List<string> fields)
         {
             var sourceCurrencyCode = fields[0].Substring(0, 3);
             var destinationCurrencyCode = fields[0].Substring(3, 3);
@@ -74,11 +74,11 @@ namespace RP_Violation
             return tradeRecord;
         }
 
-        private bool ValidateTradeData(string[] fields, int currentLine)
+        private bool ValidateTradeData(List<string> fields, int currentLine)
         {
-            if (fields.Length != 3)
+            if (fields.Count != 3)
             {
-                Console.WriteLine($"WARN: Line {currentLine} malformed. Only {fields.Length} field(s) found.");
+                Console.WriteLine($"WARN: Line {currentLine} malformed. Only {fields.Count} field(s) found.");
                 return false;
             }
 
@@ -117,7 +117,7 @@ namespace RP_Violation
             Console.WriteLine($"INFO: {trades.Count()} trades processed");
         }
 
-        private static IEnumerable<string> ReadTradData(Stream stream)
+        private static List<string> ReadTradData(Stream stream)
         {
             var lines = new List<string>();
             using (var reader = new StreamReader(stream))
