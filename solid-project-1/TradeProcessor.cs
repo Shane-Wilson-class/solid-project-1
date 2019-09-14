@@ -17,8 +17,7 @@ namespace solid_project_1
     ///     When the validation rules of the input data change.
     ///     When the way in which you log warnings, errors, and information changes.
     ///     When the database changes in any way.
-    ///     Example from Adaptive Code: Agile coding with design patterns and SOLID principles 2nd Edition, by McLean Hall,
-    ///     Gary
+    ///     Example from Adaptive Code: Agile coding with design patterns and SOLID principles 2nd Edition, by McLean Hall, Gary
     /// </summary>
     public class TradeProcessor
     {
