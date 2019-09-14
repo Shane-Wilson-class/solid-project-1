@@ -6,7 +6,7 @@ namespace solid_project_1
 {
     public class TradeStorage : ITradeStorage
     {
-        public void Persist(IReadOnlyCollection<TradeRecord> trades)
+        public void Persist(List<TradeRecord> trades)
         {
             using (var db = new LiteRepository(@"trades.db"))
             {

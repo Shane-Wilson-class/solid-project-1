@@ -4,6 +4,6 @@ namespace solid_project_1
 {
     public interface ITradeParser
     {
-        List<TradeRecord> Parse(IEnumerable<string> lines);
+        List<TradeRecord> Parse(List<string> lines);
     }
 }

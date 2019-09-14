@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace solid_project_1
 {
@@ -7,13 +8,13 @@ namespace solid_project_1
     {
         private const float LotSize = 100;
 
-        public List<TradeRecord> Parse(IEnumerable<string> lines)
+        public List<TradeRecord> Parse(List<string> lines)
         {
             var trades = new List<TradeRecord>();
             var lineCount = 1;
             foreach (var line in lines)
             {
-                var fields = line.Split(new[] { ',' });
+                var fields = line.Split(new[] { ',' }).ToList();
 
                 if (!ValidateTradeData(fields, lineCount))
                 {
@@ -30,7 +31,7 @@ namespace solid_project_1
             return trades;
         }
 
-        private TradeRecord MapTradeDataToTradeRecord(string[] fields)
+        private TradeRecord MapTradeDataToTradeRecord(List<string> fields)
         {
             var sourceCurrencyCode = fields[0].Substring(0, 3);
             var destinationCurrencyCode = fields[0].Substring(3, 3);
@@ -48,11 +49,11 @@ namespace solid_project_1
             return tradeRecord;
         }
 
-        private bool ValidateTradeData(string[] fields, int currentLine)
+        private bool ValidateTradeData(List<string> fields, int currentLine)
         {
-            if (fields.Length != 3)
+            if (fields.Count != 3)
             {
-                Console.WriteLine($"WARN: Line {currentLine} malformed. Only {fields.Length} field(s) found.");
+                Console.WriteLine($"WARN: Line {currentLine} malformed. Only {fields.Count} field(s) found.");
                 return false;
             }
 

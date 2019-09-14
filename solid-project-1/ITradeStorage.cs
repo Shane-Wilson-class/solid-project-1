@@ -4,6 +4,6 @@ namespace solid_project_1
 {
     public interface ITradeStorage
     {
-        void Persist(IReadOnlyCollection<TradeRecord> trades);
+        void Persist(List<TradeRecord> trades);
     }
 }

@@ -5,7 +5,7 @@ namespace solid_project_1
 {
     public class TradeDataProvider : ITradeDataProvider
     {
-        public IEnumerable<string> GetTradeData(Stream stream)
+        public List<string> GetTradeData(Stream stream)
         {
             var lines = new List<string>();
             using (var reader = new StreamReader(stream))
