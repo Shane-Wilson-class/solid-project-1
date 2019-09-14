@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using LiteDB;
 
-namespace RP_Violation
+namespace solid_project_1
 {
     /// <summary>
     ///     The responsibilities of the TradeProcessor are reading streams, parsing strings, validating fields, logging, and
