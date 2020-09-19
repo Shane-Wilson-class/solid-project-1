@@ -27,7 +27,6 @@ namespace solid_project_1
             Container.RegisterSingleton<ITradeParser, TradeParser>();
             Container.RegisterSingleton<ITradeStorage, TradeStorage>();
             Container.RegisterSingleton<ITradeDataProvider, TradeDataProvider>();
-            Container.RegisterType<TradeParser>();
         }
     }
 }
