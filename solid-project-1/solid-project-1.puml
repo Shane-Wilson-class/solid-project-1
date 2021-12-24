@@ -19,6 +19,7 @@ class TradeParser {
 
 }
 class TradeStorage
+class TradeRecord
 
 class TradeProcessor {
  - readonly ITradeParser _tradeParser;
@@ -42,4 +43,9 @@ Program -up[dotted]->TradeParser
 Program -up[dotted]->TradeStorage
 Program -up[dotted]->TradeDataProvider
 Program -up[dotted]->TradeProcessor
+
+ITradeParser-down[dotted]-->TradeRecord
+ITradeStorage-down[dotted]-->TradeRecord
+TradeParser-right[dotted]-->TradeRecord
+Program-right[dotted]-->TradeRecord
 @enduml
