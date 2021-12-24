@@ -38,8 +38,8 @@ class Program {
 - static void Main()
 }
 
-Program ---up>TradeParser
-Program ---up>TradeStorage
-Program ---up>TradeDataProvider
-Program ---up>TradeProcessor
+Program -up[dotted]->TradeParser
+Program -up[dotted]->TradeStorage
+Program -up[dotted]->TradeDataProvider
+Program -up[dotted]->TradeProcessor
 @enduml
