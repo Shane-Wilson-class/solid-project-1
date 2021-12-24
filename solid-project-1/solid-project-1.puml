@@ -1,0 +1,36 @@
+﻿@startuml
+!theme crt-green
+interface ITradeDataProvider{
++ List<string> GetTradeData(Stream stream)
+}
+interface ITradeParser
+{
+ + List<TradeRecord> Parse(List<string> lines)
+}
+interface ITradeStorage
+{
+  + void Persist(List<TradeRecord> trades)
+}
+class TradeDataProvider
+class TradeParser {
+- const float LotSize = 100
+- static TradeRecord MapTradeDataToTradeRecord(IReadOnlyList<string> fields)
+- static bool ValidateTradeData(IReadOnlyList<string> fields, int currentLine)
+
+}
+class TradeStorage
+
+class TradeProcessor {
+ - readonly ITradeParser _tradeParser;
+ - readonly ITradeStorage _tradeStorage;
+ - readonly ITradeDataProvider _tradeDataProvider
+ +  void ProcessTrades(Stream stream)
+}
+TradeProcessor o-->ITradeParser
+TradeProcessor o-->ITradeDataProvider
+TradeProcessor o-->ITradeStorage
+
+TradeParser ..up|> ITradeParser
+TradeStorage ..up|> ITradeStorage
+TradeDataProvider ..up|> ITradeDataProvider
+@enduml

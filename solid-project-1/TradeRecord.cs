@@ -1,6 +1,6 @@
 ﻿namespace solid_project_1
 {
-    public class TradeRecord
+    public record TradeRecord
     {
         public int Id { get; set; }
         public string SourceCurrency { get; set; }

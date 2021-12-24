@@ -31,7 +31,7 @@ namespace solid_project_1
             return trades;
         }
 
-        private TradeRecord MapTradeDataToTradeRecord(List<string> fields)
+        private static TradeRecord MapTradeDataToTradeRecord(IReadOnlyList<string> fields)
         {
             var sourceCurrencyCode = fields[0].Substring(0, 3);
             var destinationCurrencyCode = fields[0].Substring(3, 3);
@@ -49,7 +49,7 @@ namespace solid_project_1
             return tradeRecord;
         }
 
-        private bool ValidateTradeData(List<string> fields, int currentLine)
+        private static bool ValidateTradeData(IReadOnlyList<string> fields, int currentLine)
         {
             if (fields.Count != 3)
             {
