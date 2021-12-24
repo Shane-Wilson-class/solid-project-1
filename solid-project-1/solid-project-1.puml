@@ -26,11 +26,20 @@ class TradeProcessor {
  - readonly ITradeDataProvider _tradeDataProvider
  +  void ProcessTrades(Stream stream)
 }
-TradeProcessor o-->ITradeParser
-TradeProcessor o-->ITradeDataProvider
-TradeProcessor o-->ITradeStorage
+TradeProcessor o--->ITradeParser
+TradeProcessor o--->ITradeDataProvider
+TradeProcessor o--->ITradeStorage
 
-TradeParser ..up|> ITradeParser
-TradeStorage ..up|> ITradeStorage
-TradeDataProvider ..up|> ITradeDataProvider
+TradeParser ...up|> ITradeParser
+TradeStorage ...up|> ITradeStorage
+TradeDataProvider ...up|> ITradeDataProvider
+
+class Program {
+- static void Main()
+}
+
+Program ---up>TradeParser
+Program ---up>TradeStorage
+Program ---up>TradeDataProvider
+Program ---up>TradeProcessor
 @enduml
