@@ -19,11 +19,11 @@ namespace solid_project_1
     ///     When the database changes in any way.
     ///     Example from Adaptive Code: Agile coding with design patterns and SOLID principles 2nd Edition, by McLean Hall, Gary
     /// </summary>
-    public class TradeProcessor
+    public static class TradeProcessor
     {
         private const float LotSize = 100;
 
-        public void ProcessTrades(Stream stream)
+        public static void ProcessTrades(Stream stream)
         {
             var lines = ReadTradData(stream);
 
@@ -32,7 +32,7 @@ namespace solid_project_1
             StoreTrades(trades);
         }
 
-        private List<TradeRecord> Parse(List<string> lines)
+        private static IEnumerable<TradeRecord> Parse(List<string> lines)
         {
             var trades = new List<TradeRecord>();
             var lineCount = 1;
@@ -55,7 +55,7 @@ namespace solid_project_1
             return trades;
         }
 
-        private TradeRecord MapTradeDataToTradeRecord(List<string> fields)
+        private static TradeRecord MapTradeDataToTradeRecord(IReadOnlyList<string> fields)
         {
             var sourceCurrencyCode = fields[0].Substring(0, 3);
             var destinationCurrencyCode = fields[0].Substring(3, 3);
@@ -73,7 +73,7 @@ namespace solid_project_1
             return tradeRecord;
         }
 
-        private bool ValidateTradeData(List<string> fields, int currentLine)
+        private static bool ValidateTradeData(IReadOnlyList<string> fields, int currentLine)
         {
             if (fields.Count != 3)
             {

@@ -1,0 +1,29 @@
+﻿@startuml
+!theme crt-green
+
+class TradeProcessor {
+- const float LotSize = 100
++ static void ProcessTrades(Stream stream)
+- static IEnumerable<TradeRecord> Parse(List<string> lines)
+- static TradeRecord MapTradeDataToTradeRecord(IReadOnlyList<string> fields)
+- static bool ValidateTradeData(IReadOnlyList<string> fields, int currentLine)
+- static void StoreTrades(IEnumerable<TradeRecord> trades)
+- static List<string> ReadTradData(Stream stream)
+}
+
+class TradeRecord {
++ int Id { get; set; }
++ string DestinationCurrency { get; set; }
++ float Lots { get; set; }
++ decimal Price { get; set; }
++ string SourceCurrency { get; set; }
++ override string ToString()
+}
+
+class Program {
+- static void Main()
+}
+
+Program -[dotted]->TradeProcessor
+TradeProcessor -right[dotted]-> TradeRecord
+@enduml

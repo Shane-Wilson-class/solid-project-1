@@ -9,8 +9,7 @@ namespace solid_project_1
         private static void Main()
         {
             var tradeStream = File.OpenRead("trades.txt");
-            var tradeProcessor = new TradeProcessor();
-            tradeProcessor.ProcessTrades(tradeStream);
+            TradeProcessor.ProcessTrades(tradeStream);
 
             using var db = new LiteRepository(@"trades.db");
 
