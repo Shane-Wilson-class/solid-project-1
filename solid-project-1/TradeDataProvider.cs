@@ -8,13 +8,10 @@ namespace solid_project_1
         public List<string> GetTradeData(Stream stream)
         {
             var lines = new List<string>();
-            using (var reader = new StreamReader(stream))
+            using var reader = new StreamReader(stream);
+            while (reader.ReadLine() is { } line)
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    lines.Add(line);
-                }
+                lines.Add(line);
             }
 
             return lines;
