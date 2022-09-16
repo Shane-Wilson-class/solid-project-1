@@ -1,5 +1,5 @@
 ﻿@startuml
-!theme crt-green
+
 
 class TradeProcessor {
 - const float LotSize = 100
@@ -11,19 +11,11 @@ class TradeProcessor {
 - static List<string> ReadTradData(Stream stream)
 }
 
-class TradeRecord {
-+ int Id { get; set; }
-+ string DestinationCurrency { get; set; }
-+ float Lots { get; set; }
-+ decimal Price { get; set; }
-+ string SourceCurrency { get; set; }
-+ override string ToString()
-}
+note right of TradeProcessor
+   This is a static class
+   Since it has no instance data.
+   Each method is also static
+   There is no need to create an instance and has no constructor   
+end note
 
-class Program {
-- static void Main()
-}
-
-Program -[dotted]->TradeProcessor
-TradeProcessor -right[dotted]-> TradeRecord
 @enduml
