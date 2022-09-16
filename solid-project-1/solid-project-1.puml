@@ -42,6 +42,9 @@ class TradeProcessor {
  + void ProcessTrades(Stream stream)
 }
 
+note top of TradeProcessor
+    Can no longer be static since it uses instance data 
+end note
 note right of TradeProcessor::TradeProcessor
     Constructor injection 
 end note
@@ -54,7 +57,9 @@ TradeParser ...up|> ITradeParser
 TradeStorage ...up|> ITradeStorage
 TradeDataProvider ...up|> ITradeDataProvider
 
-
+note right of TradeDataProvider::GetTradeData
+    Can no longer be static
+end note
 
 
 
