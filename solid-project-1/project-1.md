@@ -1,8 +1,12 @@
 ﻿### CS236 Project 1: Updating TradeProcessor Class
 
 #### Overview
-
+### Before
+![Before](Before.png)
+### After
+![After](After.png)
 In this project, you will change the `TradeProcessor` class to follow the Single Responsibility Principle (SRP) more closely. You will split the different jobs done by the `TradeProcessor` class into separate classes. You will use constructor injection to add these new classes into the updated `TradeProcessor` class. The final version of the `TradeProcessor` class will be a good example of the facade design pattern.
+
 
 #### Step 1: Understand the Current Code
 

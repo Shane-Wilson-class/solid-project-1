@@ -1,20 +1,41 @@
 ﻿@startuml
-hide empty members
-!define RECTANGLE class
+skinparam backgroundColor  #1E1E1E
+skinparam DefaultFontColor #A9DCDF
+skinparam DefaultFontSize 16
+skinparam DefaultFontName JetBrains Mono
 
-RECTANGLE Program {
+skinparam class {
+  BackgroundColor #1E1E1E
+  BorderColor #2D91AF
+  ArrowColor #FF8000
+  BorderThickness 2
+}
+
+skinparam package {
+  BackgroundColor #0
+  BorderColor #2D91AF
+}
+
+skinparam note {
+  BackgroundColor #565656
+  BorderColor #F78782
+  FontColor #A9DCDF
+}
+hide empty members
+
+class Program {
     - static void Main()
 }
 
-RECTANGLE TradeRecord {
-    + int Id { get; set; }
+class TradeRecord {
+    + int Id { get; init; }
     + string DestinationCurrency { get; init; }
     + float Lots { get; init; }
     + decimal Price { get; init; }
     + string SourceCurrency { get; init; }
 }
 
-RECTANGLE TradeProcessor {
+class TradeProcessor {
     - const float LotSize
     + static void ProcessTrades(Stream stream)
     - static IEnumerable<TradeRecord> Parse(List<string> lines)

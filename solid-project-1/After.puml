@@ -2,6 +2,29 @@
 
 hide empty members
 
+skinparam backgroundColor  #1E1E1E
+skinparam DefaultFontColor #A9DCDF
+skinparam DefaultFontSize 16
+skinparam DefaultFontName JetBrains Mono
+
+skinparam class {
+  BackgroundColor #1E1E1E
+  BorderColor #2D91AF
+  ArrowColor #FF8000
+  BorderThickness 2
+}
+
+skinparam package {
+  BackgroundColor #0
+  BorderColor #2D91AF
+}
+
+skinparam note {
+  BackgroundColor #565656
+  BorderColor #F78782
+  FontColor #A9DCDF
+}
+
 interface ITradeDataProvider {
     + List<string> GetTradeData(Stream stream)
 }
