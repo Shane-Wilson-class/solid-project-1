@@ -1,0 +1,20 @@
+﻿@startuml
+hide empty members
+
+class Program {
+    - static void Main()
+}
+
+class TradeProcessor {
+    - const float LotSize
+    + static void ProcessTrades(Stream stream)
+    - static IEnumerable<TradeRecord> Parse(List<string> lines)
+    - static TradeRecord MapTradeDataToTradeRecord(IReadOnlyList<string> fields)
+    - static bool ValidateTradeData(IReadOnlyList<string> fields, int currentLine)
+    - static void StoreTrades(IEnumerable<TradeRecord> trades)
+    - static List<string> ReadTradData(Stream stream)
+}
+
+Program --> TradeProcessor : uses
+
+@enduml
