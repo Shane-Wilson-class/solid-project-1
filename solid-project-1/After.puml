@@ -1,0 +1,56 @@
+﻿@startuml
+hide empty members
+!define RECTANGLE class
+
+RECTANGLE TradeProcessor {
+    +TradeProcessor(ITradeDataProvider dataProvider, ITradeParser parser, ITradeStorage storage)
+    +void ProcessTrades()
+}
+
+interface ITradeDataProvider {
+    +List<string> GetTradeData(Stream stream)
+}
+
+interface ITradeParser {
+    +List<TradeRecord> Parse(List<string> lines)
+    +bool ValidateFields(List<string> fields)
+}
+
+interface ITradeStorage {
+    +void Persist(List<TradeRecord> trades)
+    +void LogMessage(string message)
+}
+
+class TradeDataProvider {
+    +List<string> GetTradeData(Stream stream)
+}
+
+class TradeParser {
+    +List<TradeRecord> Parse(List<string> lines)
+    -bool ValidateFields(List<string> fields)
+    -TradeRecord MapTradeData(string[] fields)
+}
+
+class TradeStorage {
+    +void Persist(List<TradeRecord> trades)
+    -void LogMessage(string message)
+}
+
+class TradeRecord {
+    -string Symbol
+    -double Price
+    -int Quantity
+}
+
+TradeProcessor --> ITradeDataProvider : uses
+TradeProcessor --> ITradeParser : uses
+TradeProcessor --> ITradeStorage : uses
+
+TradeDataProvider ..|> ITradeDataProvider : implements
+TradeParser ..|> ITradeParser : implements
+TradeStorage ..|> ITradeStorage : implements
+
+ITradeParser <-- TradeRecord : uses
+ITradeStorage <-- TradeRecord : uses
+
+@enduml

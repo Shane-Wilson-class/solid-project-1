@@ -1,0 +1,30 @@
+﻿@startuml
+hide empty members
+!define RECTANGLE class
+
+RECTANGLE Program {
+    - static void Main()
+}
+
+RECTANGLE TradeRecord {
+    + int Id { get; set; }
+    + string DestinationCurrency { get; init; }
+    + float Lots { get; init; }
+    + decimal Price { get; init; }
+    + string SourceCurrency { get; init; }
+}
+
+RECTANGLE TradeProcessor {
+    - const float LotSize
+    + static void ProcessTrades(Stream stream)
+    - static IEnumerable<TradeRecord> Parse(List<string> lines)
+    - static TradeRecord MapTradeDataToTradeRecord(IReadOnlyList<string> fields)
+    - static bool ValidateTradeData(IReadOnlyList<string> fields, int currentLine)
+    - static void StoreTrades(IEnumerable<TradeRecord> trades)
+    - static List<string> ReadTradData(Stream stream)
+}
+
+Program --> TradeProcessor : uses
+TradeProcessor --> TradeRecord : uses
+
+@enduml

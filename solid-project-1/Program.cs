@@ -2,19 +2,18 @@
 using System.IO;
 using LiteDB;
 
-namespace solid_project_1
+namespace solid_project_1;
+
+public static class Program
 {
-    public static class Program
+    private static void Main()
     {
-        private static void Main()
-        {
-            var tradeStream = File.OpenRead("trades.txt");
-            var tradeProcessor = new TradeProcessor(new TradeParser(), new TradeStorage(), new TradeDataProvider());
-            tradeProcessor.ProcessTrades(tradeStream);
+        var tradeStream = File.OpenRead("trades.txt");
+        var tradeProcessor = new TradeProcessor(new TradeParser(), new TradeStorage(), new TradeDataProvider());
+        tradeProcessor.ProcessTrades(tradeStream);
 
-            using var db = new LiteRepository(@"trades.db");
+        using var db = new LiteRepository(@"trades.db");
 
-            db.Query<TradeRecord>().ToList().ForEach(Console.WriteLine);
-        }
+        db.Query<TradeRecord>().ToList().ForEach(Console.WriteLine);
     }
 }

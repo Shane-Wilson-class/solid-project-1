@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace solid_project_1
+namespace solid_project_1;
+
+public interface ITradeStorage
 {
-    public interface ITradeStorage
-    {
-        void Persist(List<TradeRecord> trades);
-    }
+    void Persist(List<TradeRecord> trades);
 }
