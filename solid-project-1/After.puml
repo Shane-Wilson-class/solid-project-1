@@ -53,8 +53,8 @@ TradeDataProvider ..up|> ITradeDataProvider
 TradeParser ..up|> ITradeParser
 TradeStorage ..up|> ITradeStorage
 TradeProcessor o.. ITradeDataProvider: <<uses>>
-TradeProcessor o..> ITradeParser: <<uses>>
-TradeProcessor o..> ITradeStorage: <<uses>>
+TradeProcessor o.. ITradeParser: <<uses>>
+TradeProcessor o.. ITradeStorage: <<uses>>
 TradeProcessor ..> TradeRecord: <<uses>>
 TradeParser ..> TradeRecord: <<creates>>
 TradeStorage ..> TradeRecord: <<uses>>
