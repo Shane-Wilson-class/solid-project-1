@@ -1,56 +1,67 @@
 ﻿@startuml
-hide empty members
-!define RECTANGLE class
 
-RECTANGLE TradeProcessor {
-    +TradeProcessor(ITradeDataProvider dataProvider, ITradeParser parser, ITradeStorage storage)
-    +void ProcessTrades()
-}
+hide empty members
 
 interface ITradeDataProvider {
-    +List<string> GetTradeData(Stream stream)
+    + List<string> GetTradeData(Stream stream)
 }
 
-interface ITradeParser {
-    +List<TradeRecord> Parse(List<string> lines)
-    +bool ValidateFields(List<string> fields)
+interface  ITradeParser {
+    + List<TradeRecord> Parse(List<string> lines)
 }
 
 interface ITradeStorage {
-    +void Persist(List<TradeRecord> trades)
-    +void LogMessage(string message)
+    + void Persist(List<TradeRecord> trades)
 }
 
 class TradeDataProvider {
-    +List<string> GetTradeData(Stream stream)
+    + List<string> GetTradeData(Stream stream)
 }
 
 class TradeParser {
-    +List<TradeRecord> Parse(List<string> lines)
-    -bool ValidateFields(List<string> fields)
-    -TradeRecord MapTradeData(string[] fields)
+    - float LotSize = 100
+    + List<TradeRecord> Parse(List<string> lines)
+    - TradeRecord MapTradeDataToTradeRecord(IReadOnlyList<string> fields)
+    - bool ValidateTradeData(IReadOnlyList<string> fields, int currentLine)
 }
 
 class TradeStorage {
-    +void Persist(List<TradeRecord> trades)
-    -void LogMessage(string message)
+    + void Persist(List<TradeRecord> trades)
+}
+
+class TradeProcessor {
+    - ITradeParser _tradeParser
+    - ITradeStorage _tradeStorage
+    - ITradeDataProvider _tradeDataProvider
+    + void TradeProcessor(ITradeParser tradeParser, ITradeStorage tradeStorage, ITradeDataProvider tradeDataProvider)
+    + void ProcessTrades(Stream stream)
 }
 
 class TradeRecord {
-    -string Symbol
-    -double Price
-    -int Quantity
+    + int Id {get, init}
+    + string SourceCurrency {get, init}
+    + string DestinationCurrency {get, init}
+    + float Lots {get, init}
+    + decimal Price {get, init}
 }
 
-TradeProcessor --> ITradeDataProvider : uses
-TradeProcessor --> ITradeParser : uses
-TradeProcessor --> ITradeStorage : uses
+class Program {
+    - void Main()
+}
 
-TradeDataProvider ..|> ITradeDataProvider : implements
-TradeParser ..|> ITradeParser : implements
-TradeStorage ..|> ITradeStorage : implements
-
-ITradeParser <-- TradeRecord : uses
-ITradeStorage <-- TradeRecord : uses
+TradeDataProvider --|> ITradeDataProvider
+TradeParser --|> ITradeParser
+TradeStorage --|> ITradeStorage
+TradeProcessor ..> ITradeDataProvider: <<uses>>
+TradeProcessor ..> ITradeParser: <<uses>>
+TradeProcessor ..> ITradeStorage: <<uses>>
+TradeProcessor ..> TradeRecord: <<uses>>
+TradeParser ..> TradeRecord: <<creates>>
+TradeStorage ..> TradeRecord: <<uses>>
+Program ..> TradeProcessor: <<creates>>
+Program ..> TradeDataProvider: <<creates>>
+Program ..> TradeParser: <<creates>>
+Program ..> TradeStorage: <<creates>>
+Program ..> TradeRecord: <<uses>>
 
 @enduml

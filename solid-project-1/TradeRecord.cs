@@ -1,15 +1,10 @@
-﻿namespace solid_project_1
+﻿namespace solid_project_1;
+
+public record TradeRecord
 {
-    public record TradeRecord
-    {
-        public int Id { get; set; }
-        public string SourceCurrency { get; set; }
-        public string DestinationCurrency { get; set; }
-        public float Lots { get; set; }
-        public decimal Price { get; set; }
-        public override string ToString()
-        {
-            return $"ID:{Id}, SourceCur:{SourceCurrency}, DestCur:{DestinationCurrency}, Number of Lots:{Lots}, Price:{Price}";
-        }
-    }
+    public int Id { get; init; }
+    public string SourceCurrency { get; init; }
+    public string DestinationCurrency { get; init; }
+    public float Lots { get; init; }
+    public decimal Price { get; init; }
 }
