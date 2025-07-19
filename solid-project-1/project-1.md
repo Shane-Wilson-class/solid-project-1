@@ -52,12 +52,14 @@ public void ProcessTrades(Stream stream)
 Change the main program to create `TradeDataProvider`, `TradeParser`, and `TradeStorage` objects, and then add them to `TradeProcessor` through its constructor. Use this main method:
 
 ```csharp
-static void Main(string[] args)
+private static void Main()
 {
-    ITradeDataProvider dataProvider = new TradeDataProvider();
-    ITradeParser parser = new TradeParser();
-    ITradeStorage storage = new TradeStorage();
-    
-    TradeProcessor tradeProcessor = new TradeProcessor(dataProvider, parser, storage);
-    tradeProcessor.ProcessTrades();
+    var tradeStream = File.OpenRead("trades.txt");
+    var tradeProcessor = new TradeProcessor(new TradeParser(), new TradeStorage(), new TradeDataProvider());
+    tradeProcessor.ProcessTrades(tradeStream);
+
+    using var db = new LiteRepository(@"trades.db");
+
+    db.Query<TradeRecord>().ToList().ForEach(Console.WriteLine);
 }
+```
