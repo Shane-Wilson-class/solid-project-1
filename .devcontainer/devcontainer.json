@@ -23,6 +23,6 @@
     }
   },
   "forwardPorts": [],
-  "postCreateCommand": "dotnet restore solid-project-1/solid-project-1.csproj",
+  "postCreateCommand": "dotnet restore solid-project-1/solid-project-1.sln",
   "remoteUser": "vscode"
 }
