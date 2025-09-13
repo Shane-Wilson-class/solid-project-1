@@ -1,146 +1,65 @@
-# solid-project-1
+﻿### CS236 Project 1: Updating TradeProcessor Class
 
-[![.NET CI/CD Pipeline](https://github.com/oop-jccc/solid-project-1/actions/workflows/ci.yml/badge.svg)](https://github.com/oop-jccc/solid-project-1/actions/workflows/ci.yml)
+#### Overview
+### Before
+![Before](Before.png)
+### After
+![After](After.png)
+In this project, you will change the `TradeProcessor` class to follow the Single Responsibility Principle (SRP) more closely. You will split the different jobs done by the `TradeProcessor` class into separate classes. You will use constructor injection to add these new classes into the updated `TradeProcessor` class. The final version of the `TradeProcessor` class will be a good example of the facade design pattern.
 
-This repository contains a .NET application with a fully configured development environment for optimal productivity.
 
-## Quick Start
+#### Step 1: Understand the Current Code
 
-### Option 1: GitHub Codespaces (Recommended)
-The fastest way to get started is using GitHub Codespaces, which provides a fully configured development environment in the cloud.
+Look at the current code to understand how it works right now. Notice that the `TradeProcessor` class has static methods. This is because these methods do not use any instance fields. While you are changing the code, some methods should remain static if they don't need to use instance fields.
 
-1. Click the **Code** button on this repository
-2. Select **Codespaces** tab
-3. Click **Create codespace on master**
-4. Wait for the environment to initialize (this may take a few minutes)
-5. Once ready, you can immediately start coding with full IntelliSense and debugging support
+#### Step 2: Find SRP Violations
 
-### Option 2: Local Development with VS Code
-1. **Prerequisites:**
-   - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-   - [Visual Studio Code](https://code.visualstudio.com/)
-   - [C# Dev Kit extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
+Find and list the different reasons that might make you change the `TradeProcessor` class, showing that it does not follow the SRP properly. See how the class is doing many jobs like getting data from a stream, turning stream lines into trade records, checking trade data, and saving the data in a database.
 
-2. **Clone and Setup:**
-   ```bash
-   git clone https://github.com/USER/REPO.git
-   cd REPO
-   code .
-   ```
+#### Step 3: Create Interfaces
 
-3. **Restore Dependencies:**
-   ```bash
-   dotnet restore solid-project-1\solid-project-1.csproj
-   ```
+Create the following interfaces to represent the separated jobs:
 
-## Build and Debug
+- `ITradeDataProvider`: This should have the function `List<string> GetTradeData(Stream stream)`.
+- `ITradeParser`: This should have the method `List<TradeRecord> Parse(List<string> lines)`.
+- `ITradeStorage`: This should have the function `void Persist(List<TradeRecord> trades)`.
 
-### Using VS Code Tasks
-This repository includes pre-configured VS Code tasks for common operations:
+#### Step 4: Implement Classes
 
-- **Build:** `Ctrl+Shift+P` → "Tasks: Run Task" → "build"
-- **Run:** `Ctrl+Shift+P` → "Tasks: Run Task" → "run"
-- **Clean:** `Ctrl+Shift+P` → "Tasks: Run Task" → "clean"
-- **Watch:** `Ctrl+Shift+P` → "Tasks: Run Task" → "watch" (auto-rebuilds on file changes)
+Create separate classes to implement the interfaces you made in step 3:
 
-### Using Command Line
-```bash
-# Navigate to the project directory
-cd solid-project-1
+- `TradeDataProvider` for `ITradeDataProvider`.
+- `TradeParser` for `ITradeParser`.
+- `TradeStorage` for `ITradeStorage`.
 
-# Restore dependencies
-dotnet restore
+Move the right methods from the original `TradeProcessor` class to these new classes. Decide which methods should stay static based on whether they use instance fields.
 
-# Build the project
-dotnet build
+#### Step 5: Update TradeProcessor Class
 
-# Run the application
-dotnet run
+Change the `TradeProcessor` class to use constructor injection, making it use instances of `ITradeDataProvider`, `ITradeParser`, and `ITradeStorage` to do its jobs. Here is how the `ProcessTrades` method should look:
 
-# Clean build artifacts
-dotnet clean
-
-# Watch for changes and auto-rebuild
-dotnet watch run
+```csharp
+public void ProcessTrades(Stream stream)
+{
+    var lines = _tradeDataProvider.GetTradeData(stream);
+    var trades = _tradeParser.Parse(lines);
+    _tradeStorage.Persist(trades);
+}
 ```
 
-### Debugging in VS Code
-1. Open the project in VS Code
-2. Set breakpoints by clicking in the left margin of the code editor
-3. Press `F5` or go to **Run and Debug** panel
-4. Select ".NET Core Launch (console)" configuration
-5. The debugger will start and stop at your breakpoints
+#### Step 6: Update Main Program
 
-## Project Structure
+Change the main program to create `TradeDataProvider`, `TradeParser`, and `TradeStorage` objects, and then add them to `TradeProcessor` through its constructor. Use this main method:
 
+```csharp
+private static void Main()
+{
+    var tradeStream = File.OpenRead("trades.txt");
+    var tradeProcessor = new TradeProcessor(new TradeParser(), new TradeStorage(), new TradeDataProvider());
+    tradeProcessor.ProcessTrades(tradeStream);
+
+    using var db = new LiteRepository(@"trades.db");
+
+    db.Query<TradeRecord>().ToList().ForEach(Console.WriteLine);
+}
 ```
-solid-project-1/
-├── solid-project-1.csproj    # Project configuration
-├── Program.cs                     # Application entry point
-└── ...                           # Additional source files
-```
-
-## Development Environment Features
-
-### VS Code Configuration
-- **IntelliSense:** Full C# code completion and suggestions
-- **Debugging:** Integrated debugging with breakpoints and variable inspection
-- **Tasks:** Pre-configured build, run, and test tasks
-- **Extensions:** Automatically installed C# development extensions
-
-### DevContainer/Codespaces Features
-- **High-Performance Environment:** 8 CPU cores, 16GB RAM
-- **Pre-installed Extensions:**
-  - C# Dev Kit with full language support
-  - GitHub Copilot for AI-assisted coding
-  - Visual Assist for enhanced productivity
-  - Better C# syntax highlighting
-  - IL Spy for .NET decompilation
-  - NuGet Gallery integration
-  - Coverage gutters for test coverage
-  - REST Client for API testing
-
-### Continuous Integration
-- **Automated Builds:** Every push and pull request triggers automated builds
-- **Multi-job Pipeline:** Build, test, code quality, and security scanning
-- **Artifact Storage:** Build outputs are stored for 30 days
-- **Cross-branch Support:** CI runs on all branches to ensure consistency
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature-name`
-3. Make your changes and commit: `git commit -m "Add your feature"`
-4. Push to your fork: `git push origin feature/your-feature-name`
-5. Create a Pull Request
-
-## Code Style
-
-This project follows standard C# coding conventions:
-- PascalCase for public members and types
-- camelCase for private fields and local variables
-- Meaningful names for classes, methods, and variables
-- XML documentation comments for public APIs
-
-## Troubleshooting
-
-### Common Issues
-
-**Build Errors:**
-- Ensure .NET 8.0 SDK is installed
-- Run `dotnet restore` to restore NuGet packages
-- Check that you're in the correct directory
-
-**VS Code Issues:**
-- Install the C# Dev Kit extension
-- Reload VS Code window: `Ctrl+Shift+P` → "Developer: Reload Window"
-- Check that .NET is properly installed: `dotnet --version`
-
-**Codespaces Issues:**
-- Wait for the environment to fully initialize
-- If extensions aren't working, try rebuilding the container
-- Check the terminal for any error messages during setup
-
----
-
-Happy coding!
