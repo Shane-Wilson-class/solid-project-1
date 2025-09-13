@@ -1,0 +1,117 @@
+name: Pull Request Check
+
+on:
+  pull_request:
+    branches: [ "main", "master" ]
+    types: [opened, synchronize, reopened]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  SOLUTION_PATH: 'solid-project-1/solid-project-1.sln'
+
+jobs:
+  pr-validation:
+    name: PR Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout PR
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Debug --no-restore
+
+    - name: Quick test run
+      run: |
+        if dotnet sln ${{ env.SOLUTION_PATH }} list | grep -i test; then
+          echo "Running tests for PR validation..."
+          dotnet test ${{ env.SOLUTION_PATH }} --configuration Debug --no-build --verbosity minimal
+        else
+          echo "No tests found - build validation only"
+        fi
+
+    - name: PR Status Comment
+      if: always()
+      run: |
+        if [[ "${{ job.status }}" == "success" ]]; then
+          echo "✅ PR validation passed! Ready for review."
+        else
+          echo "❌ PR validation failed. Please check the build errors."
+        fi
+
+  changes-detection:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      code-changed: ${{ steps.changes.outputs.code }}
+      docs-changed: ${{ steps.changes.outputs.docs }}
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Detect changes
+      id: changes
+      run: |
+        # Check if any C# code files changed
+        if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.(cs|csproj|sln)$'; then
+          echo "code=true" >> $GITHUB_OUTPUT
+          echo "📝 Code changes detected"
+        else
+          echo "code=false" >> $GITHUB_OUTPUT
+          echo "ℹ️ No code changes detected"
+        fi
+        
+        # Check if documentation changed
+        if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.(md|txt)$'; then
+          echo "docs=true" >> $GITHUB_OUTPUT
+          echo "📚 Documentation changes detected"
+        else
+          echo "docs=false" >> $GITHUB_OUTPUT
+          echo "ℹ️ No documentation changes detected"
+        fi
+
+  pr-summary:
+    name: PR Summary
+    runs-on: ubuntu-latest
+    needs: [pr-validation, changes-detection]
+    if: always()
+    
+    steps:
+    - name: Generate PR Summary
+      run: |
+        echo "## Pull Request Validation Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Changes Detected:" >> $GITHUB_STEP_SUMMARY
+        echo "- Code Changes: ${{ needs.changes-detection.outputs.code-changed }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Documentation Changes: ${{ needs.changes-detection.outputs.docs-changed }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Validation Results:" >> $GITHUB_STEP_SUMMARY
+        echo "- Build & Test: ${{ needs.pr-validation.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ needs.pr-validation.result }}" == "success" ]]; then
+          echo "✅ **All checks passed!** This PR is ready for review." >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ **Validation failed.** Please address the issues before requesting review." >> $GITHUB_STEP_SUMMARY
+        fi

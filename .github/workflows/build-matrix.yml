@@ -1,0 +1,94 @@
+name: Multi-Platform Build Matrix
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  schedule:
+    # Run weekly on Sundays at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  SOLUTION_PATH: 'solid-project-1/solid-project-1.sln'
+
+jobs:
+  build-matrix:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact-name: linux-build
+          - os: windows-latest
+            artifact-name: windows-build
+          - os: macos-latest
+            artifact-name: macos-build
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Display environment info
+      run: |
+        echo "OS: ${{ matrix.os }}"
+        echo ".NET Version: $(dotnet --version)"
+        echo "Runtime: $(dotnet --info | grep 'RID')"
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
+
+    - name: Test solution (if tests exist)
+      run: |
+        if dotnet sln ${{ env.SOLUTION_PATH }} list | grep -i test; then
+          dotnet test ${{ env.SOLUTION_PATH }} --configuration Release --no-build --verbosity normal
+        else
+          echo "No test projects found, skipping tests"
+        fi
+      shell: bash
+
+    - name: Publish application
+      run: dotnet publish solid-project-1/solid-project-1.csproj --configuration Release --output ./publish --no-build
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.artifact-name }}-${{ github.run_number }}
+        path: ./publish/
+        retention-days: 7
+
+  build-summary:
+    name: Build Summary
+    runs-on: ubuntu-latest
+    needs: build-matrix
+    if: always()
+    
+    steps:
+    - name: Summary
+      run: |
+        echo "## Build Matrix Results" >> $GITHUB_STEP_SUMMARY
+        echo "| Platform | Status |" >> $GITHUB_STEP_SUMMARY
+        echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Ubuntu   | ${{ needs.build-matrix.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Windows  | ${{ needs.build-matrix.result }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| macOS    | ${{ needs.build-matrix.result }} |" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ needs.build-matrix.result }}" == "success" ]]; then
+          echo "✅ All platform builds completed successfully!" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Some platform builds failed. Check the logs for details." >> $GITHUB_STEP_SUMMARY
+        fi
