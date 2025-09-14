@@ -105,7 +105,6 @@ public static class TradeProcessor
 
     private static void StoreTrades(IEnumerable<TradeRecord> trades)
     {
-        // Create DatabaseRepository (concrete dependency) - students will learn to abstract this
         var databaseRepository = new DatabaseRepository();
 
         // Clear existing trades before inserting new ones to prevent duplicate trade records
@@ -123,13 +122,11 @@ public static class TradeProcessor
     private static List<string> ReadTradData(Stream stream)
     {
         var lines = new List<string>();
-        using (var reader = new StreamReader(stream))
+        using var reader = new StreamReader(stream);
+        string line;
+        while ((line = reader.ReadLine()) != null)
         {
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                lines.Add(line);
-            }
+            lines.Add(line);
         }
 
         return lines;
