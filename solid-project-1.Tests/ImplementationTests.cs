@@ -1,7 +1,3 @@
-using System;
-using System.Reflection;
-using NUnit.Framework;
-
 namespace solid_project_1.Tests
 {
     /// <summary>

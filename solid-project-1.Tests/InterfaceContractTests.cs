@@ -16,10 +16,8 @@ namespace solid_project_1.Tests
         [Test]
         public void ITradeDataProvider_Interface_Should_Exist()
         {
-            // Arrange & Act
             var interfaceType = Type.GetType("solid_project_1.ITradeDataProvider, solid-project-1");
-            
-            // Assert
+
             Assert.That(interfaceType, Is.Not.Null);
             Assert.That(interfaceType.IsInterface, Is.True);
         }
@@ -27,13 +25,10 @@ namespace solid_project_1.Tests
         [Test]
         public void ITradeDataProvider_Should_Have_GetTradeData_Method()
         {
-            // Arrange
             var interfaceType = Type.GetType("solid_project_1.ITradeDataProvider, solid-project-1");
-            
-            // Act
+
             var method = interfaceType?.GetMethod("GetTradeData");
-            
-            // Assert
+
             Assert.That(method, Is.Not.Null);
             Assert.That(method.ReturnType, Is.EqualTo(typeof(List<string>)));
             
@@ -45,10 +40,8 @@ namespace solid_project_1.Tests
         [Test]
         public void ITradeParser_Interface_Should_Exist()
         {
-            // Arrange & Act
             var interfaceType = Type.GetType("solid_project_1.ITradeParser, solid-project-1");
-            
-            // Assert
+
             Assert.That(interfaceType, Is.Not.Null);
             Assert.That(interfaceType.IsInterface, Is.True);
         }
@@ -56,13 +49,10 @@ namespace solid_project_1.Tests
         [Test]
         public void ITradeParser_Should_Have_Parse_Method()
         {
-            // Arrange
             var interfaceType = Type.GetType("solid_project_1.ITradeParser, solid-project-1");
-            
-            // Act
+
             var method = interfaceType?.GetMethod("Parse");
-            
-            // Assert
+
             Assert.That(method, Is.Not.Null);
             Assert.That(method.ReturnType, Is.EqualTo(typeof(List<TradeRecord>)));
             
@@ -74,10 +64,8 @@ namespace solid_project_1.Tests
         [Test]
         public void ITradeStorage_Interface_Should_Exist()
         {
-            // Arrange & Act
             var interfaceType = Type.GetType("solid_project_1.ITradeStorage, solid-project-1");
-            
-            // Assert
+
             Assert.That(interfaceType, Is.Not.Null);
             Assert.That(interfaceType.IsInterface, Is.True);
         }
@@ -85,13 +73,10 @@ namespace solid_project_1.Tests
         [Test]
         public void ITradeStorage_Should_Have_Persist_Method()
         {
-            // Arrange
             var interfaceType = Type.GetType("solid_project_1.ITradeStorage, solid-project-1");
-            
-            // Act
+
             var method = interfaceType?.GetMethod("Persist");
-            
-            // Assert
+
             Assert.That(method, Is.Not.Null);
             Assert.That(method.ReturnType, Is.EqualTo(typeof(void)));
             
