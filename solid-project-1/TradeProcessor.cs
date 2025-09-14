@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace solid_project_1;
 
@@ -21,6 +22,8 @@ public class TradeProcessor
 
         var trades = _tradeParser.Parse(lines);
 
-        _tradeStorage.Persist(trades);
+        // Capture and display the status message returned from Persist()
+        var statusMessage = _tradeStorage.Persist(trades);
+        Console.WriteLine(statusMessage);
     }
 }

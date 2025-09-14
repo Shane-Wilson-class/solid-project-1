@@ -72,7 +72,7 @@ public class InterfaceContractTests
         var method = interfaceType?.GetMethod("Persist");
 
         Assert.That(method, Is.Not.Null);
-        Assert.That(method.ReturnType, Is.EqualTo(typeof(void)));
+        Assert.That(method.ReturnType, Is.EqualTo(typeof(string)));
 
         var parameters = method.GetParameters();
         Assert.That(parameters.Length, Is.EqualTo(1));

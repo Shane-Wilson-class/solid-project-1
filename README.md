@@ -22,19 +22,52 @@ Create the following interfaces to represent the separated jobs:
 
 - `ITradeDataProvider`: This should have the function `List<string> GetTradeData(Stream stream)`.
 - `ITradeParser`: This should have the method `List<TradeRecord> Parse(List<string> lines)`.
-- `ITradeStorage`: This should have the function `void Persist(List<TradeRecord> trades)`.
+- `ITradeStorage`: This should have the function `string Persist(List<TradeRecord> trades)`.
 
-#### Step 4: Implement Classes
+#### Step 4: Understand Volatile vs Stable Dependencies
+
+Before implementing the classes, it's important to understand the difference between **volatile** and **stable** dependencies:
+
+- **Stable Dependencies**: These are dependencies that rarely change and are predictable. Examples include standard library classes, utility classes, and domain objects.
+- **Volatile Dependencies**: These are dependencies that change frequently or are unpredictable. Examples include database access, file I/O, web services, and external APIs.
+
+Database access (like LiteDB operations) is a **volatile dependency** because:
+- Database connection strings may change
+- Database implementations may be swapped (LiteDB → SQL Server → PostgreSQL)
+- Database operations can fail due to external factors
+- Testing requires isolation from actual database operations
+
+#### Step 5: Create Database Repository
+
+Create a `DatabaseRepository` class that wraps all database operations. This separates the volatile database dependency from your business logic:
+
+```csharp
+public class DatabaseRepository
+{
+    private readonly string _databasePath;
+
+    public DatabaseRepository(string databasePath = @"trades.db")
+    {
+        _databasePath = databasePath;
+    }
+
+    public void ClearAllTrades() { /* Implementation */ }
+    public void InsertTrades(IEnumerable<TradeRecord> trades) { /* Implementation */ }
+    public List<TradeRecord> GetAllTrades() { /* Implementation */ }
+}
+```
+
+#### Step 6: Implement Classes
 
 Create separate classes to implement the interfaces you made in step 3:
 
 - `TradeDataProvider` for `ITradeDataProvider`.
 - `TradeParser` for `ITradeParser`.
-- `TradeStorage` for `ITradeStorage`.
+- `TradeStorage` for `ITradeStorage` - **Important**: This should depend on `DatabaseRepository` as a concrete dependency initially.
 
-Move the right methods from the original `TradeProcessor` class to these new classes. Decide which methods should stay static based on whether they use instance fields.
+Move the right methods from the original `TradeProcessor` class to these new classes. The `TradeStorage` class should accept `DatabaseRepository` through its constructor and use it for all database operations.
 
-#### Step 5: Update TradeProcessor Class
+#### Step 7: Update TradeProcessor Class
 
 Change the `TradeProcessor` class to use constructor injection, making it use instances of `ITradeDataProvider`, `ITradeParser`, and `ITradeStorage` to do its jobs. Here is how the `ProcessTrades` method should look:
 
@@ -43,23 +76,51 @@ public void ProcessTrades(Stream stream)
 {
     var lines = _tradeDataProvider.GetTradeData(stream);
     var trades = _tradeParser.Parse(lines);
-    _tradeStorage.Persist(trades);
+    var statusMessage = _tradeStorage.Persist(trades);
+    Console.WriteLine(statusMessage);
 }
 ```
 
-#### Step 6: Update Main Program
+Notice that `Persist()` now returns a string status message instead of void, which improves testability and provides better feedback.
 
-Change the main program to create `TradeDataProvider`, `TradeParser`, and `TradeStorage` objects, and then add them to `TradeProcessor` through its constructor. Use this main method:
+#### Step 8: Update Main Program
+
+Change the main program to create the required objects with their dependencies. Notice how `TradeStorage` now requires a `DatabaseRepository`:
 
 ```csharp
 private static void Main()
 {
     var tradeStream = File.OpenRead("trades.txt");
-    var tradeProcessor = new TradeProcessor(new TradeParser(), new TradeStorage(), new TradeDataProvider());
+
+    // Create the database repository (concrete dependency)
+    var databaseRepository = new DatabaseRepository();
+
+    // Create TradeStorage with DatabaseRepository dependency
+    var tradeStorage = new TradeStorage(databaseRepository);
+
+    var tradeProcessor = new TradeProcessor(new TradeParser(), tradeStorage, new TradeDataProvider());
     tradeProcessor.ProcessTrades(tradeStream);
 
-    using var db = new LiteRepository(@"trades.db");
-
-    db.Query<TradeRecord>().ToList().ForEach(Console.WriteLine);
+    // Display all trades from the database
+    databaseRepository.GetAllTrades().ForEach(Console.WriteLine);
 }
 ```
+
+#### Step 9: Advanced Challenge - Apply Dependency Inversion Principle
+
+Once you have completed the basic implementation, consider this advanced challenge:
+
+The `TradeStorage` class currently depends on the concrete `DatabaseRepository` class. This is still a violation of the **Dependency Inversion Principle** because:
+
+- High-level modules (TradeStorage) should not depend on low-level modules (DatabaseRepository)
+- Both should depend on abstractions (interfaces)
+
+**Challenge**: Create an `IDatabaseRepository` interface and modify `TradeStorage` to depend on this interface instead of the concrete class. This will make your code more testable and flexible.
+
+**Benefits of this approach**:
+
+- **Testability**: You can mock `IDatabaseRepository` for unit testing
+- **Flexibility**: You can swap database implementations without changing `TradeStorage`
+- **SOLID Compliance**: Follows the Dependency Inversion Principle completely
+
+This demonstrates the progression from concrete dependencies (easier to understand) to interface-based dependencies (more flexible and testable).

@@ -9,11 +9,21 @@ interface ITradeParser
 }
 interface ITradeStorage
 {
-  + void Persist(List<TradeRecord> trades)
+  + string Persist(List<TradeRecord> trades)
+}
+
+class DatabaseRepository {
+- string _databasePath
++ DatabaseRepository(string databasePath)
++ void ClearAllTrades()
++ void InsertTrades(IEnumerable<TradeRecord> trades)
++ List<TradeRecord> GetAllTrades()
 }
 
 class TradeStorage {
-+ void Persist(List<TradeRecord> trades)
+- DatabaseRepository _databaseRepository
++ TradeStorage(DatabaseRepository databaseRepository)
++ string Persist(List<TradeRecord> trades)
 }
 
 class TradeDataProvider {
@@ -57,8 +67,20 @@ TradeParser ...up|> ITradeParser
 TradeStorage ...up|> ITradeStorage
 TradeDataProvider ...up|> ITradeDataProvider
 
+TradeStorage o---DatabaseRepository
+
 note right of TradeDataProvider::GetTradeData
     Can no longer be static
+end note
+
+note right of TradeStorage::TradeStorage
+    Depends on concrete DatabaseRepository
+    (volatile dependency)
+end note
+
+note right of DatabaseRepository
+    Wraps all database operations
+    (volatile dependency that should be abstracted)
 end note
 
 

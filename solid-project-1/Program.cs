@@ -8,12 +8,18 @@ public static class Program
 {
     private static void Main()
     {
-        var tradeStream = File.OpenRead("trades.txt");
-        var tradeProcessor = new TradeProcessor(new TradeParser(), new TradeStorage(), new TradeDataProvider());
+        using var tradeStream = File.OpenRead("trades.txt");
+
+        // Create the database repository (concrete implementation of interface)
+        IDatabaseRepository databaseRepository = new DatabaseRepository();
+
+        // Create TradeStorage with IDatabaseRepository dependency (interface-based dependency injection)
+        var tradeStorage = new TradeStorage(databaseRepository);
+
+        var tradeProcessor = new TradeProcessor(new TradeParser(), tradeStorage, new TradeDataProvider());
         tradeProcessor.ProcessTrades(tradeStream);
 
-        using var db = new LiteRepository(@"trades.db");
-
-        db.Query<TradeRecord>().ToList().ForEach(Console.WriteLine);
+        // Display all trades from the database
+        databaseRepository.GetAllTrades().ForEach(Console.WriteLine);
     }
 }

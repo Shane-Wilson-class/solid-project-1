@@ -11,7 +11,7 @@ interface  ITradeParser {
 }
 
 interface ITradeStorage {
-    + void Persist(List<TradeRecord> trades)
+    + string Persist(List<TradeRecord> trades)
 }
 
 class TradeDataProvider {
@@ -25,8 +25,20 @@ class TradeParser {
     - bool ValidateTradeData(IReadOnlyList<string> fields, int currentLine)
 }
 
+class DatabaseRepository {
+    - string _databasePath
+    + DatabaseRepository(string databasePath)
+    + void ClearAllTrades()
+    + void InsertTrade(TradeRecord trade)
+    + void InsertTrades(IEnumerable<TradeRecord> trades)
+    + List<TradeRecord> GetAllTrades()
+    + int GetTradeCount()
+}
+
 class TradeStorage {
-    + void Persist(List<TradeRecord> trades)
+    - DatabaseRepository _databaseRepository
+    + TradeStorage(DatabaseRepository databaseRepository)
+    + string Persist(List<TradeRecord> trades)
 }
 
 class TradeProcessor {
@@ -58,10 +70,13 @@ TradeProcessor ..> ITradeStorage: <<uses>>
 TradeProcessor ..> TradeRecord: <<uses>>
 TradeParser ..> TradeRecord: <<creates>>
 TradeStorage ..> TradeRecord: <<uses>>
+TradeStorage ..> DatabaseRepository: <<uses>>
+DatabaseRepository ..> TradeRecord: <<uses>>
 Program ..> TradeProcessor: <<creates>>
 Program ..> TradeDataProvider: <<creates>>
 Program ..> TradeParser: <<creates>>
 Program ..> TradeStorage: <<creates>>
+Program ..> DatabaseRepository: <<creates>>
 Program ..> TradeRecord: <<uses>>
 
 @enduml
