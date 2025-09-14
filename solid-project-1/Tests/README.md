@@ -11,7 +11,7 @@ To create a test project and run these tests:
 cd solid-project-1
 
 # Create a new test project
-dotnet new xunit -n solid-project-1.Tests
+dotnet new nunit -n solid-project-1.Tests
 
 # Add the test project to the solution
 dotnet sln add solid-project-1.Tests/solid-project-1.Tests.csproj

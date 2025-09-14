@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using Xunit;
+using NUnit.Framework;
 
 namespace solid_project_1.Tests
 {
@@ -8,21 +8,22 @@ namespace solid_project_1.Tests
     /// Tests to verify that implementation classes exist and implement the correct interfaces.
     /// These tests help ensure you've created the implementation classes as specified.
     /// </summary>
+    [TestFixture]
     public class ImplementationTests
     {
-        [Fact]
+        [Test]
         public void TradeDataProvider_Class_Should_Exist()
         {
             // Arrange & Act
             var classType = Type.GetType("solid_project_1.TradeDataProvider, solid-project-1");
             
             // Assert
-            Assert.NotNull(classType);
-            Assert.True(classType.IsClass);
-            Assert.False(classType.IsAbstract);
+            Assert.That(classType, Is.Not.Null);
+            Assert.That(classType.IsClass, Is.True);
+            Assert.That(classType.IsAbstract, Is.False);
         }
 
-        [Fact]
+        [Test]
         public void TradeDataProvider_Should_Implement_ITradeDataProvider()
         {
             // Arrange
@@ -30,24 +31,24 @@ namespace solid_project_1.Tests
             var interfaceType = Type.GetType("solid_project_1.ITradeDataProvider, solid-project-1");
             
             // Act & Assert
-            Assert.NotNull(classType);
-            Assert.NotNull(interfaceType);
-            Assert.True(interfaceType.IsAssignableFrom(classType));
+            Assert.That(classType, Is.Not.Null);
+            Assert.That(interfaceType, Is.Not.Null);
+            Assert.That(interfaceType.IsAssignableFrom(classType), Is.True);
         }
 
-        [Fact]
+        [Test]
         public void TradeParser_Class_Should_Exist()
         {
             // Arrange & Act
             var classType = Type.GetType("solid_project_1.TradeParser, solid-project-1");
             
             // Assert
-            Assert.NotNull(classType);
-            Assert.True(classType.IsClass);
-            Assert.False(classType.IsAbstract);
+            Assert.That(classType, Is.Not.Null);
+            Assert.That(classType.IsClass, Is.True);
+            Assert.That(classType.IsAbstract, Is.False);
         }
 
-        [Fact]
+        [Test]
         public void TradeParser_Should_Implement_ITradeParser()
         {
             // Arrange
@@ -55,24 +56,24 @@ namespace solid_project_1.Tests
             var interfaceType = Type.GetType("solid_project_1.ITradeParser, solid-project-1");
             
             // Act & Assert
-            Assert.NotNull(classType);
-            Assert.NotNull(interfaceType);
-            Assert.True(interfaceType.IsAssignableFrom(classType));
+            Assert.That(classType, Is.Not.Null);
+            Assert.That(interfaceType, Is.Not.Null);
+            Assert.That(interfaceType.IsAssignableFrom(classType), Is.True);
         }
 
-        [Fact]
+        [Test]
         public void TradeStorage_Class_Should_Exist()
         {
             // Arrange & Act
             var classType = Type.GetType("solid_project_1.TradeStorage, solid-project-1");
             
             // Assert
-            Assert.NotNull(classType);
-            Assert.True(classType.IsClass);
-            Assert.False(classType.IsAbstract);
+            Assert.That(classType, Is.Not.Null);
+            Assert.That(classType.IsClass, Is.True);
+            Assert.That(classType.IsAbstract, Is.False);
         }
 
-        [Fact]
+        [Test]
         public void TradeStorage_Should_Implement_ITradeStorage()
         {
             // Arrange
@@ -80,27 +81,27 @@ namespace solid_project_1.Tests
             var interfaceType = Type.GetType("solid_project_1.ITradeStorage, solid-project-1");
             
             // Act & Assert
-            Assert.NotNull(classType);
-            Assert.NotNull(interfaceType);
-            Assert.True(interfaceType.IsAssignableFrom(classType));
+            Assert.That(classType, Is.Not.Null);
+            Assert.That(interfaceType, Is.Not.Null);
+            Assert.That(interfaceType.IsAssignableFrom(classType), Is.True);
         }
 
-        [Fact]
+        [Test]
         public void TradeProcessor_Should_Not_Be_Static_Class()
         {
             // Arrange
             var classType = Type.GetType("solid_project_1.TradeProcessor, solid-project-1");
             
             // Act & Assert
-            Assert.NotNull(classType);
-            Assert.True(classType.IsClass);
+            Assert.That(classType, Is.Not.Null);
+            Assert.That(classType.IsClass, Is.True);
             
             // Static classes are both abstract and sealed in .NET
             var isStaticClass = classType.IsAbstract && classType.IsSealed;
-            Assert.False(isStaticClass, "TradeProcessor should not be a static class after refactoring");
+            Assert.That(isStaticClass, Is.False, "TradeProcessor should not be a static class after refactoring");
         }
 
-        [Fact]
+        [Test]
         public void TradeProcessor_Should_Have_Constructor_With_Dependencies()
         {
             // Arrange
@@ -117,8 +118,8 @@ namespace solid_project_1.Tests
             });
             
             // Assert
-            Assert.NotNull(constructor);
-            Assert.Equal(3, constructor.GetParameters().Length);
+            Assert.That(constructor, Is.Not.Null);
+            Assert.That(constructor.GetParameters().Length, Is.EqualTo(3));
         }
     }
 }
