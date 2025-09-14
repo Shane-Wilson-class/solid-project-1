@@ -14,7 +14,7 @@ public class TradeParser : ITradeParser
         var lineCount = 1;
         foreach (var line in lines)
         {
-            var fields = line.Split(new[] { ',' }).ToList();
+            var fields = line.Split([',']).ToList();
 
             if (!ValidateTradeData(fields, lineCount))
             {
