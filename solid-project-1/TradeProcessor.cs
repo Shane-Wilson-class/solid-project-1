@@ -38,7 +38,7 @@ public static class TradeProcessor
         var lineCount = 1;
         foreach (var line in lines)
         {
-            var fields = line.Split(new[] {','}).ToList();
+            var fields = line.Split([',']).ToList();
 
             if (!ValidateTradeData(fields, lineCount))
             {
@@ -87,14 +87,14 @@ public static class TradeProcessor
             return false;
         }
 
-        if (!int.TryParse(fields[1], out var tradeAmount))
+        if (!int.TryParse(fields[1], out _))
         {
             Console.WriteLine($"WARN: Trade amount on line {currentLine} not a valid integer: '{fields[1]}'");
             return false;
         }
 
 
-        if (!decimal.TryParse(fields[2], out var tradePrice))
+        if (!decimal.TryParse(fields[2], out _))
         {
             Console.WriteLine($"WARN: Trade price on line {currentLine} not a valid decimal: '{fields[2]}'");
             return false;
@@ -105,7 +105,7 @@ public static class TradeProcessor
 
     private static void StoreTrades(IEnumerable<TradeRecord> trades)
     {
-        using (var db = new LiteRepository(@"trades.db"))
+        using (var db = new LiteRepository("trades.db"))
         {
             // Clear existing trades before inserting new ones to prevent duplicate trade records
             // from accumulating when the application is run multiple times. This ensures the
