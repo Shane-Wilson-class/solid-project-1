@@ -57,7 +57,7 @@ jobs:
         else
           echo "ℹ️ No test projects found in the solution. Skipping test execution."
           echo "💡 Consider adding unit tests to improve code quality and reliability."
-          echo "   You can add test projects using: dotnet new xunit -n YourProject.Tests"
+          echo "   You can add test projects using: dotnet new nunit -n YourProject.Tests"
         fi
 
     - name: Upload test results
