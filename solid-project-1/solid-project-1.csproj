@@ -15,6 +15,7 @@
     <None Update="trades.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Remove="trades.db" />
   </ItemGroup>
 
   <!-- Exclude test template files from compilation -->
