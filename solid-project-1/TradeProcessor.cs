@@ -105,19 +105,17 @@ public static class TradeProcessor
 
     private static void StoreTrades(IEnumerable<TradeRecord> trades)
     {
-        using (var db = new LiteRepository("trades.db"))
-        {
-            // Clear existing trades before inserting new ones to prevent duplicate trade records
-            // from accumulating when the application is run multiple times. This ensures the
-            // database contains only the current set of trades from the input file, making the
-            // behavior predictable for educational purposes.
-            db.DeleteMany<TradeRecord>(_ => true);
+        // Create DatabaseRepository (concrete dependency) - students will learn to abstract this
+        var databaseRepository = new DatabaseRepository();
 
-            foreach (var tradeRecord in trades)
-            {
-                db.Insert(tradeRecord);
-            }
-        }
+        // Clear existing trades before inserting new ones to prevent duplicate trade records
+        // from accumulating when the application is run multiple times. This ensures the
+        // database contains only the current set of trades from the input file, making the
+        // behavior predictable for educational purposes.
+        databaseRepository.ClearAllTrades();
+
+        // Insert all trades using the repository
+        databaseRepository.InsertTrades(trades);
 
         Console.WriteLine($"INFO: {trades.Count()} trades processed");
     }

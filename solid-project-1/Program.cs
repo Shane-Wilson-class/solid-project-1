@@ -8,11 +8,11 @@ internal static class Program
 {
     private static void Main()
     {
-        var tradeStream = File.OpenRead("trades.txt");
+        using var tradeStream = File.OpenRead("trades.txt");
         TradeProcessor.ProcessTrades(tradeStream);
 
-        using var db = new LiteRepository(@"trades.db");
-
-        db.Query<TradeRecord>().ToList().ForEach(Console.WriteLine);
+        // Use DatabaseRepository to display results (demonstrates the concrete dependency)
+        var databaseRepository = new DatabaseRepository();
+        databaseRepository.GetAllTrades().ForEach(Console.WriteLine);
     }
 }
