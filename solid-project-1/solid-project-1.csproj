@@ -17,4 +17,16 @@
     </None>
   </ItemGroup>
 
+  <!-- Exclude test template files from compilation -->
+  <ItemGroup>
+    <Compile Remove="Tests\**" />
+    <EmbeddedResource Remove="Tests\**" />
+    <None Remove="Tests\**" />
+  </ItemGroup>
+
+  <!-- Include test template files as content for reference -->
+  <ItemGroup>
+    <None Include="Tests\**" />
+  </ItemGroup>
+
 </Project>
