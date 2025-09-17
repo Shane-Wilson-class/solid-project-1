@@ -38,7 +38,7 @@ Create the following interfaces to represent the separated jobs:
 
 - `ITradeDataProvider`: This should have the function `List<string> GetTradeData(Stream stream)`.
 - `ITradeParser`: This should have the method `List<TradeRecord> Parse(List<string> lines)`.
-- `ITradeStorage`: This should have the function `void Persist(List<TradeRecord> trades)`.
+- `ITradeStorage`: This should have the function `string Persist(List<TradeRecord> trades)`.
 
 #### Step 4: Implement Classes
 
@@ -62,7 +62,91 @@ Move the right methods from the original `TradeProcessor` class to these new cla
 - No class should directly reference `LiteDB` except `TradeStorage`
 - No class should directly reference `Console.WriteLine` except where appropriate for logging
 
-#### Step 5: Update TradeProcessor Class
+#### Step 5: Apply Dependency Inversion Principle - Create Database Abstraction
+
+The current `TradeStorage` implementation still violates the **Dependency Inversion Principle** because it depends directly on the concrete `DatabaseRepository` class. To complete the SOLID implementation, you need to create an interface abstraction.
+
+**Create IDatabaseRepository Interface**:
+
+Create an `IDatabaseRepository` interface that defines the contract for database operations:
+
+```csharp
+public interface IDatabaseRepository
+{
+    /// <summary>
+    /// Clears all existing trade records from the database.
+    /// </summary>
+    void ClearAllTrades();
+
+    /// <summary>
+    /// Inserts a single trade record into the database.
+    /// </summary>
+    /// <param name="trade">The trade record to insert</param>
+    void InsertTrade(TradeRecord trade);
+
+    /// <summary>
+    /// Inserts multiple trade records into the database efficiently.
+    /// </summary>
+    /// <param name="trades">The collection of trade records to insert</param>
+    void InsertTrades(IEnumerable<TradeRecord> trades);
+
+    /// <summary>
+    /// Retrieves all trade records from the database.
+    /// </summary>
+    /// <returns>List of all trade records in the database</returns>
+    List<TradeRecord> GetAllTrades();
+
+    /// <summary>
+    /// Gets the count of trade records in the database.
+    /// </summary>
+    /// <returns>Number of trade records</returns>
+    int GetTradeCount();
+}
+```
+
+**Update DatabaseRepository to Implement Interface**:
+
+Modify the `DatabaseRepository` class to implement the `IDatabaseRepository` interface:
+
+```csharp
+public class DatabaseRepository : IDatabaseRepository
+{
+    // Keep all existing implementation, just add the interface
+}
+```
+
+**Update TradeStorage to Use Interface**:
+
+Modify the `TradeStorage` class to depend on the `IDatabaseRepository` interface instead of the concrete class:
+
+```csharp
+public class TradeStorage : ITradeStorage
+{
+    private readonly IDatabaseRepository _databaseRepository;
+
+    public TradeStorage(IDatabaseRepository databaseRepository)
+    {
+        _databaseRepository = databaseRepository;
+    }
+
+    public string Persist(List<TradeRecord> trades)
+    {
+        _databaseRepository.ClearAllTrades();
+        _databaseRepository.InsertTrades(trades);
+        return $"INFO: {trades.Count} trades processed";
+    }
+}
+```
+
+**Why This Matters - Dependency Inversion Principle**:
+
+- **High-level modules** (TradeStorage) should not depend on **low-level modules** (DatabaseRepository)
+- Both should depend on **abstractions** (IDatabaseRepository interface)
+- This makes the code more **testable** (you can mock the interface)
+- This makes the code more **flexible** (you can swap database implementations)
+- This completes the **SOLID principles** implementation
+
+#### Step 6: Update TradeProcessor Class
 
 Change the `TradeProcessor` class to use constructor injection, making it use instances of `ITradeDataProvider`, `ITradeParser`, and `ITradeStorage` to do its jobs. Here is how the `ProcessTrades` method should look:
 
@@ -77,20 +161,34 @@ public void ProcessTrades(Stream stream)
 
 #### Step 6: Update Main Program
 
-Change the main program to create `TradeDataProvider`, `TradeParser`, and `TradeStorage` objects, and then add them to `TradeProcessor` through its constructor. Use this main method:
+Change the main program to create all dependencies with proper interface-based dependency injection. Notice how we create the concrete `DatabaseRepository` but pass it as the `IDatabaseRepository` interface:
 
 ```csharp
- private static void Main()
+private static void Main()
 {
-    var tradeStream = File.OpenRead("trades.txt");
-    var tradeProcessor = new TradeProcessor(new TradeParser(), new TradeStorage(), new TradeDataProvider());
+    using var tradeStream = File.OpenRead("trades.txt");
+
+    // Create the database repository (concrete implementation of interface)
+    IDatabaseRepository databaseRepository = new DatabaseRepository();
+
+    // Create TradeStorage with IDatabaseRepository dependency (interface-based dependency injection)
+    var tradeStorage = new TradeStorage(databaseRepository);
+
+    // Create TradeProcessor with all dependencies
+    var tradeProcessor = new TradeProcessor(new TradeParser(), tradeStorage, new TradeDataProvider());
     tradeProcessor.ProcessTrades(tradeStream);
 
-    using var db = new LiteRepository(@"trades.db");
-
-    db.Query<TradeRecord>().ToList().ForEach(Console.WriteLine);
+    // Display all trades from the database
+    databaseRepository.GetAllTrades().ForEach(Console.WriteLine);
 }
 ```
+
+**Key Points About This Implementation**:
+
+- We create `DatabaseRepository` but assign it to `IDatabaseRepository` interface type
+- `TradeStorage` receives the interface, not the concrete class
+- This demonstrates **Dependency Inversion Principle** in action
+- The code is now fully testable and follows all **SOLID principles**
 
 ### Detailed Diagram
 
