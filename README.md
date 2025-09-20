@@ -4,11 +4,104 @@
 
 #### Overview
 
-### Before
-![Before](solid-project-1/Before.png)
+### Before: Monolithic Implementation
 
-### After
-![After](solid-project-1/After.png)
+```mermaid
+%%{init: {"classDiagram": {"hideEmptyMembers": true}}}%%
+classDiagram
+direction TB
+
+class TradeProcessor {
+  - LotSize: float
+  + ProcessTrades(stream: Stream): void
+  - Parse(lines: List): IEnumerable
+  - MapTradeDataToTradeRecord(fields: IReadOnlyList): TradeRecord
+  - ValidateTradeData(fields: IReadOnlyList, currentLine: int): bool
+  - StoreTrades(trades: IEnumerable): void
+  - ReadTradData(stream: Stream): List
+}
+```
+
+### After: SOLID Principles Implementation
+
+```mermaid
+%%{init: {"classDiagram": {"hideEmptyMembers": true}}}%%
+classDiagram
+direction TB
+class ITradeDataProvider {
+  <<interface>>
+  + GetTradeData(stream: Stream): List
+}
+class ITradeParser {
+  <<interface>>
+  + Parse(lines: List): List
+}
+class ITradeStorage {
+  <<interface>>
+  + Persist(trades: List): string
+}
+class IDatabaseRepository {
+  <<interface>>
+  + ClearAllTrades(): void
+  + InsertTrade(trade: TradeRecord): void
+  + InsertTrades(trades: List): void
+  + GetAllTrades(): List
+  + GetTradeCount(): int
+}
+
+class TradeDataProvider {
+  + GetTradeData(stream: Stream): List
+}
+class TradeParser {
+  - LotSize: float
+  + Parse(lines: List): List
+  - MapTradeDataToTradeRecord(fields: List): TradeRecord
+  - ValidateTradeData(fields: List, currentLine: int): bool
+}
+class TradeStorage {
+  - databaseRepository: IDatabaseRepository
+  + TradeStorage(databaseRepository: IDatabaseRepository)
+  + Persist(trades: List): string
+}
+class DatabaseRepository {
+  - databasePath: string
+  + DatabaseRepository(databasePath: string)
+  + ClearAllTrades(): void
+  + InsertTrade(trade: TradeRecord): void
+  + InsertTrades(trades: List): void
+  + GetAllTrades(): List
+  + GetTradeCount(): int
+}
+class TradeProcessor {
+  - tradeDataProvider: ITradeDataProvider
+  - tradeParser: ITradeParser
+  - tradeStorage: ITradeStorage
+  + TradeProcessor(parser: ITradeParser, storage: ITradeStorage, dataProvider: ITradeDataProvider)
+  + ProcessTrades(stream: Stream): void
+}
+class TradeRecord {
+  + Id: int
+  + SourceCurrency: string
+  + DestinationCurrency: string
+  + Lots: float
+  + Price: decimal
+}
+
+ITradeDataProvider <|.. TradeDataProvider
+ITradeParser <|.. TradeParser
+ITradeStorage <|.. TradeStorage
+IDatabaseRepository <|.. DatabaseRepository
+
+TradeProcessor --> ITradeDataProvider
+TradeProcessor --> ITradeParser
+TradeProcessor --> ITradeStorage
+TradeStorage --> IDatabaseRepository
+
+TradeParser --> TradeRecord
+TradeStorage --> TradeRecord
+DatabaseRepository --> TradeRecord
+TradeProcessor --> TradeRecord
+```
 
 In this project, you will change the `TradeProcessor` class to follow the Single Responsibility Principle (SRP) more closely. You will split the different jobs done by the `TradeProcessor` class into separate classes. You will use constructor injection to add these new classes into the updated `TradeProcessor` class. The final version of the `TradeProcessor` class will be a good example of the facade design pattern.
 
@@ -190,6 +283,6 @@ private static void Main()
 - This demonstrates **Dependency Inversion Principle** in action
 - The code is now fully testable and follows all **SOLID principles**
 
-### Detailed Diagram
+### Diagrams
 
-![Detailed Diagram](solid-project-1/After.png)
+The “Before” and “After” class diagrams are embedded above using Mermaid so they render inline on GitHub and in modern Markdown viewers. These versions replace the previous PlantUML-generated PNG images and stay in sync with the codebase.
