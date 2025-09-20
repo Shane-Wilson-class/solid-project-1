@@ -1,0 +1,48 @@
+classDiagram
+    %% Monolithic Implementation (Before SOLID Refactoring)
+    class TradeProcessor {
+        <<static>>
+        +ProcessTrades(Stream stream) void
+        +ReadTradeData(Stream stream) List~string~
+        +Parse(List~string~ lines) List~TradeRecord~
+        +MapTradeDataToTradeRecord(IReadOnlyList~string~ fields) TradeRecord
+        +ValidateTradeData(IReadOnlyList~string~ fields, int currentLine) bool
+        +StoreTrades(List~TradeRecord~ trades) void
+        -LotSize: float = 100
+    }
+    
+    class TradeRecord {
+        +Id: int
+        +SourceCurrency: string
+        +DestinationCurrency: string
+        +Lots: float
+        +Price: decimal
+    }
+    
+    class Program {
+        +Main() void
+    }
+    
+    %% Direct Dependencies (Violates SOLID Principles)
+    TradeProcessor --> TradeRecord : creates/uses
+    TradeProcessor --> "LiteDB" : directly uses
+    TradeProcessor --> "Console" : directly uses
+    TradeProcessor --> "File System" : directly uses
+    Program --> TradeProcessor : uses
+    Program --> TradeRecord : uses
+    
+    %% Styling
+    classDef monolithic fill:#ffebee,stroke:#c62828,stroke-width:3px
+    classDef entity fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef main fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef external fill:#f5f5f5,stroke:#757575,stroke-width:1px,stroke-dasharray: 5 5
+    
+    class TradeProcessor monolithic
+    class TradeRecord entity
+    class Program main
+    class "LiteDB" external
+    class "Console" external
+    class "File System" external
+    
+    %% Annotations
+    note for TradeProcessor "Violates Single Responsibility Principle:\n- Reads data from streams\n- Parses trade data\n- Validates trade records\n- Stores data in database\n- Handles console output\n\nViolates Open/Closed Principle:\n- Hard to extend without modification\n\nViolates Dependency Inversion:\n- Depends on concrete implementations\n- Tightly coupled to LiteDB"
