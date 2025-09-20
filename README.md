@@ -59,7 +59,7 @@ class TradeParser {
   - ValidateTradeData(fields: List, currentLine: int): bool
 }
 class TradeStorage {
-  - databaseRepository: IDatabaseRepository
+  - _databaseRepository: IDatabaseRepository
   + TradeStorage(databaseRepository: IDatabaseRepository)
   + Persist(trades: List): string
 }
@@ -73,9 +73,9 @@ class DatabaseRepository {
   + GetTradeCount(): int
 }
 class TradeProcessor {
-  - tradeDataProvider: ITradeDataProvider
-  - tradeParser: ITradeParser
-  - tradeStorage: ITradeStorage
+  - _tradeDataProvider: ITradeDataProvider
+  - _tradeParser: ITradeParser
+  - _tradeStorage: ITradeStorage
   + TradeProcessor(parser: ITradeParser, storage: ITradeStorage, dataProvider: ITradeDataProvider)
   + ProcessTrades(stream: Stream): void
 }
@@ -152,7 +152,7 @@ Move the right methods from the original `TradeProcessor` class to these new cla
 **Validation Criteria for Step 4**:
 - Each implementation class should have only the methods related to its single responsibility
 - The `LotSize` constant should move to the `TradeParser` class
-- No class should directly reference `LiteDB` except `TradeStorage`
+- Only `DatabaseRepository` should reference `LiteDB`; other classes should depend on `IDatabaseRepository`
 - No class should directly reference `Console.WriteLine` except where appropriate for logging
 
 #### Step 5: Apply Dependency Inversion Principle - Create Database Abstraction
@@ -252,7 +252,7 @@ public void ProcessTrades(Stream stream)
 }
 ```
 
-#### Step 6: Update Main Program
+#### Step 7: Update Main Program
 
 Change the main program to create all dependencies with proper interface-based dependency injection. Notice how we create the concrete `DatabaseRepository` but pass it as the `IDatabaseRepository` interface:
 
@@ -282,6 +282,41 @@ private static void Main()
 - `TradeStorage` receives the interface, not the concrete class
 - This demonstrates **Dependency Inversion Principle** in action
 - The code is now fully testable and follows all **SOLID principles**
+
+### Automated Tests
+
+This repository includes a full NUnit test project to guide and verify your SOLID refactor.
+
+- Test project: `solid-project-1.Tests`
+- Test runner: `dotnet test`
+- Test framework: NUnit + Moq (for mocking)
+- Coverage: coverlet.collector (optional)
+
+#### How to run tests
+
+From the repository root:
+
+```bash
+# Run all tests in the test project
+dotnet test solid-project-1.Tests/solid-project-1.Tests.csproj
+
+# (Optional) Collect code coverage
+dotnet test solid-project-1.Tests/solid-project-1.Tests.csproj -p:CollectCoverage=true
+```
+
+You can also run tests from your IDE’s Test Explorer (Rider/VS/VS Code with C# extensions).
+
+#### Progressive Test Enabling
+
+Tests are organized to match the learning steps. Start with the already-enabled tests, then progressively uncomment additional tests as you implement each step:
+
+- DatabaseRepository tests are fully enabled now (they should pass immediately)
+- Interface and implementation tests are organized by steps and include clear "STEP 3/4/5" comments
+- After each implementation step, uncomment the next set of tests and re-run
+
+See the detailed testing guide for exact file-by-file instructions:
+
+- `solid-project-1.Tests/README-Tests.md`
 
 ### Diagrams
 

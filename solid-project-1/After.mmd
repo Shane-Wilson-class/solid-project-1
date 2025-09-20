@@ -31,7 +31,7 @@ class TradeParser {
   - ValidateTradeData(fields: List, currentLine: int): bool
 }
 class TradeStorage {
-  - databaseRepository: IDatabaseRepository
+  - _databaseRepository: IDatabaseRepository
   + TradeStorage(databaseRepository: IDatabaseRepository)
   + Persist(trades: List): string
 }
@@ -45,9 +45,9 @@ class DatabaseRepository {
   + GetTradeCount(): int
 }
 class TradeProcessor {
-  - tradeDataProvider: ITradeDataProvider
-  - tradeParser: ITradeParser
-  - tradeStorage: ITradeStorage
+  - _tradeDataProvider: ITradeDataProvider
+  - _tradeParser: ITradeParser
+  - _tradeStorage: ITradeStorage
   + TradeProcessor(parser: ITradeParser, storage: ITradeStorage, dataProvider: ITradeDataProvider)
   + ProcessTrades(stream: Stream): void
 }
