@@ -29,7 +29,8 @@ public static class TradeProcessor
 
         var trades = Parse(lines);
 
-        StoreTrades(trades);
+        var statusMessage = StoreTrades(trades);
+        Console.WriteLine(statusMessage);
     }
 
     private static IEnumerable<TradeRecord> Parse(List<string> lines)
@@ -103,7 +104,7 @@ public static class TradeProcessor
         return true;
     }
 
-    private static void StoreTrades(IEnumerable<TradeRecord> trades)
+    private static string StoreTrades(IEnumerable<TradeRecord> trades)
     {
         var databaseRepository = new DatabaseRepository();
 
@@ -116,7 +117,7 @@ public static class TradeProcessor
         // Insert all trades using the repository
         databaseRepository.InsertTrades(trades);
 
-        Console.WriteLine($"INFO: {trades.Count()} trades processed");
+        return $"INFO: {trades.Count()} trades processed";
     }
 
     private static List<string> ReadTradData(Stream stream)

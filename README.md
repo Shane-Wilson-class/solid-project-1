@@ -38,7 +38,7 @@ class ITradeParser {
 }
 class ITradeStorage {
   <<interface>>
-  + Persist(trades: List): string
+  + Persist(trades: List): void
 }
 class IDatabaseRepository {
   <<interface>>
@@ -61,7 +61,7 @@ class TradeParser {
 class TradeStorage {
   - _databaseRepository: IDatabaseRepository
   + TradeStorage(databaseRepository: IDatabaseRepository)
-  + Persist(trades: List): string
+  + Persist(trades: List): void
 }
 class DatabaseRepository {
   - databasePath: string
@@ -131,7 +131,7 @@ Create the following interfaces to represent the separated jobs:
 
 - `ITradeDataProvider`: This should have the function `List<string> GetTradeData(Stream stream)`.
 - `ITradeParser`: This should have the method `List<TradeRecord> Parse(List<string> lines)`.
-- `ITradeStorage`: This should have the function `string Persist(List<TradeRecord> trades)`.
+- `ITradeStorage`: This should have the function `void Persist(List<TradeRecord> trades)`.
 
 #### Step 4: Implement Classes
 
@@ -222,11 +222,11 @@ public class TradeStorage : ITradeStorage
         _databaseRepository = databaseRepository;
     }
 
-    public string Persist(List<TradeRecord> trades)
+    public void Persist(List<TradeRecord> trades)
     {
         _databaseRepository.ClearAllTrades();
         _databaseRepository.InsertTrades(trades);
-        return $"INFO: {trades.Count} trades processed";
+        Console.WriteLine($"INFO: {trades.Count} trades processed");
     }
 }
 ```
