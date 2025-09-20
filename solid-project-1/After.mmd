@@ -1,117 +1,43 @@
 classDiagram
-    %% Interfaces
-    class ITradeDataProvider {
-        <<interface>>
-        +GetTradeData(Stream stream) List~string~
-    }
-    
-    class ITradeParser {
-        <<interface>>
-        +Parse(List~string~ lines) List~TradeRecord~
-    }
-    
-    class ITradeStorage {
-        <<interface>>
-        +Persist(List~TradeRecord~ trades) string
-    }
-    
-    class IDatabaseRepository {
-        <<interface>>
-        +ClearAllTrades() void
-        +InsertTrade(TradeRecord trade) void
-        +InsertTrades(IEnumerable~TradeRecord~ trades) void
-        +GetAllTrades() List~TradeRecord~
-        +GetTradeCount() int
-    }
-    
-    %% Concrete Classes
-    class TradeDataProvider {
-        +GetTradeData(Stream stream) List~string~
-    }
-    
-    class TradeParser {
-        -LotSize: float = 100
-        +Parse(List~string~ lines) List~TradeRecord~
-        -MapTradeDataToTradeRecord(IReadOnlyList~string~ fields) TradeRecord
-        -ValidateTradeData(IReadOnlyList~string~ fields, int currentLine) bool
-    }
-    
-    class DatabaseRepository {
-        -_databasePath: string
-        +DatabaseRepository(string databasePath)
-        +ClearAllTrades() void
-        +InsertTrade(TradeRecord trade) void
-        +InsertTrades(IEnumerable~TradeRecord~ trades) void
-        +GetAllTrades() List~TradeRecord~
-        +GetTradeCount() int
-    }
-    
-    class TradeStorage {
-        -_databaseRepository: IDatabaseRepository
-        +TradeStorage(IDatabaseRepository databaseRepository)
-        +Persist(List~TradeRecord~ trades) string
-    }
-    
-    class TradeProcessor {
-        -_tradeParser: ITradeParser
-        -_tradeStorage: ITradeStorage
-        -_tradeDataProvider: ITradeDataProvider
-        +TradeProcessor(ITradeParser tradeParser, ITradeStorage tradeStorage, ITradeDataProvider tradeDataProvider)
-        +ProcessTrades(Stream stream) void
-    }
-    
-    class TradeRecord {
-        +Id: int
-        +SourceCurrency: string
-        +DestinationCurrency: string
-        +Lots: float
-        +Price: decimal
-    }
-    
-    class Program {
-        +Main() void
-    }
-    
-    %% Interface Implementations
-    TradeDataProvider ..|> ITradeDataProvider : implements
-    TradeParser ..|> ITradeParser : implements
-    TradeStorage ..|> ITradeStorage : implements
-    DatabaseRepository ..|> IDatabaseRepository : implements
-    
-    %% Dependencies (Dependency Injection)
-    TradeProcessor --> ITradeDataProvider : uses
-    TradeProcessor --> ITradeParser : uses
-    TradeProcessor --> ITradeStorage : uses
-    TradeStorage --> IDatabaseRepository : uses
-    
-    %% Object Creation/Usage
-    TradeParser --> TradeRecord : creates
-    TradeStorage --> TradeRecord : uses
-    DatabaseRepository --> TradeRecord : uses
-    TradeProcessor --> TradeRecord : uses
-    
-    %% Program Dependencies
-    Program --> TradeProcessor : creates
-    Program --> TradeDataProvider : creates
-    Program --> TradeParser : creates
-    Program --> TradeStorage : creates
-    Program --> DatabaseRepository : creates
-    Program --> TradeRecord : uses
-    
-    %% Styling
-    classDef interface fill:#e1f5fe,stroke:#01579b
-    classDef concrete fill:#f3e5f5,stroke:#4a148c
-    classDef entity fill:#e8f5e8,stroke:#2e7d32
-    classDef main fill:#fff3e0,stroke:#e65100
+class ITradeDataProvider {
+  <<interface>>
+}
+class ITradeParser {
+  <<interface>>
+}
+class ITradeStorage {
+  <<interface>>
+}
+class IDatabaseRepository {
+  <<interface>>
+}
 
-    class ITradeDataProvider:::interface
-    class ITradeParser:::interface
-    class ITradeStorage:::interface
-    class IDatabaseRepository:::interface
-    class TradeDataProvider:::concrete
-    class TradeParser:::concrete
-    class TradeStorage:::concrete
-    class DatabaseRepository:::concrete
-    class TradeProcessor:::concrete
-    class TradeRecord:::entity
-    class Program:::main
+class TradeDataProvider
+class TradeParser
+class TradeStorage
+class DatabaseRepository
+class TradeProcessor
+class TradeRecord
+class Program
+
+TradeDataProvider ..|> ITradeDataProvider
+TradeParser ..|> ITradeParser
+TradeStorage ..|> ITradeStorage
+DatabaseRepository ..|> IDatabaseRepository
+
+TradeProcessor --> ITradeDataProvider
+TradeProcessor --> ITradeParser
+TradeProcessor --> ITradeStorage
+TradeStorage --> IDatabaseRepository
+
+TradeParser --> TradeRecord
+TradeStorage --> TradeRecord
+DatabaseRepository --> TradeRecord
+TradeProcessor --> TradeRecord
+
+Program --> TradeProcessor
+Program --> TradeDataProvider
+Program --> TradeParser
+Program --> TradeStorage
+Program --> DatabaseRepository
+Program --> TradeRecord
