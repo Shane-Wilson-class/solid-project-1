@@ -1,4 +1,5 @@
 classDiagram
+direction TB
 class ITradeDataProvider {
   <<interface>>
 }
@@ -18,12 +19,11 @@ class TradeStorage
 class DatabaseRepository
 class TradeProcessor
 class TradeRecord
-class Program
 
-TradeDataProvider ..|> ITradeDataProvider
-TradeParser ..|> ITradeParser
-TradeStorage ..|> ITradeStorage
-DatabaseRepository ..|> IDatabaseRepository
+ITradeDataProvider <|.. TradeDataProvider
+ITradeParser <|.. TradeParser
+ITradeStorage <|.. TradeStorage
+IDatabaseRepository <|.. DatabaseRepository
 
 TradeProcessor --> ITradeDataProvider
 TradeProcessor --> ITradeParser
@@ -35,9 +35,3 @@ TradeStorage --> TradeRecord
 DatabaseRepository --> TradeRecord
 TradeProcessor --> TradeRecord
 
-Program --> TradeProcessor
-Program --> TradeDataProvider
-Program --> TradeParser
-Program --> TradeStorage
-Program --> DatabaseRepository
-Program --> TradeRecord
