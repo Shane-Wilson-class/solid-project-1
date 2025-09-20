@@ -11,7 +11,15 @@ interface  ITradeParser {
 }
 
 interface ITradeStorage {
-    + void Persist(List<TradeRecord> trades)
+    + string Persist(List<TradeRecord> trades)
+}
+
+interface IDatabaseRepository {
+    + void ClearAllTrades()
+    + void InsertTrade(TradeRecord trade)
+    + void InsertTrades(IEnumerable<TradeRecord> trades)
+    + List<TradeRecord> GetAllTrades()
+    + int GetTradeCount()
 }
 
 class TradeDataProvider {
@@ -25,8 +33,20 @@ class TradeParser {
     - bool ValidateTradeData(IReadOnlyList<string> fields, int currentLine)
 }
 
+class DatabaseRepository {
+    - string _databasePath
+    + DatabaseRepository(string databasePath)
+    + void ClearAllTrades()
+    + void InsertTrade(TradeRecord trade)
+    + void InsertTrades(IEnumerable<TradeRecord> trades)
+    + List<TradeRecord> GetAllTrades()
+    + int GetTradeCount()
+}
+
 class TradeStorage {
-    + void Persist(List<TradeRecord> trades)
+    - IDatabaseRepository _databaseRepository
+    + TradeStorage(IDatabaseRepository databaseRepository)
+    + string Persist(List<TradeRecord> trades)
 }
 
 class TradeProcessor {
@@ -52,16 +72,20 @@ class Program {
 TradeDataProvider ..up|> ITradeDataProvider
 TradeParser ..up|> ITradeParser
 TradeStorage ..up|> ITradeStorage
-TradeProcessor o.. ITradeDataProvider: <<uses>>
-TradeProcessor o.. ITradeParser: <<uses>>
-TradeProcessor o.. ITradeStorage: <<uses>>
+DatabaseRepository ..up|> IDatabaseRepository
+TradeProcessor ..> ITradeDataProvider: <<uses>>
+TradeProcessor ..> ITradeParser: <<uses>>
+TradeProcessor ..> ITradeStorage: <<uses>>
 TradeProcessor ..> TradeRecord: <<uses>>
 TradeParser ..> TradeRecord: <<creates>>
 TradeStorage ..> TradeRecord: <<uses>>
+TradeStorage ..> IDatabaseRepository: <<uses>>
+DatabaseRepository ..> TradeRecord: <<uses>>
 Program ..> TradeProcessor: <<creates>>
 Program ..> TradeDataProvider: <<creates>>
 Program ..> TradeParser: <<creates>>
 Program ..> TradeStorage: <<creates>>
+Program ..> DatabaseRepository: <<creates>>
 Program ..> TradeRecord: <<uses>>
 
 @enduml
