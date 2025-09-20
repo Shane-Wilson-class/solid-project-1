@@ -2,23 +2,62 @@ classDiagram
 direction TB
 class ITradeDataProvider {
   <<interface>>
+  + GetTradeData(stream: Stream): List
 }
 class ITradeParser {
   <<interface>>
+  + Parse(lines: List): List
 }
 class ITradeStorage {
   <<interface>>
+  + Persist(trades: List): string
 }
 class IDatabaseRepository {
   <<interface>>
+  + ClearAllTrades(): void
+  + InsertTrade(trade: TradeRecord): void
+  + InsertTrades(trades: List): void
+  + GetAllTrades(): List
+  + GetTradeCount(): int
 }
 
-class TradeDataProvider
-class TradeParser
-class TradeStorage
-class DatabaseRepository
-class TradeProcessor
-class TradeRecord
+class TradeDataProvider {
+  + GetTradeData(stream: Stream): List
+}
+class TradeParser {
+  - LotSize: float
+  + Parse(lines: List): List
+  - MapTradeDataToTradeRecord(fields: List): TradeRecord
+  - ValidateTradeData(fields: List, currentLine: int): bool
+}
+class TradeStorage {
+  - databaseRepository: IDatabaseRepository
+  + TradeStorage(databaseRepository: IDatabaseRepository)
+  + Persist(trades: List): string
+}
+class DatabaseRepository {
+  - databasePath: string
+  + DatabaseRepository(databasePath: string)
+  + ClearAllTrades(): void
+  + InsertTrade(trade: TradeRecord): void
+  + InsertTrades(trades: List): void
+  + GetAllTrades(): List
+  + GetTradeCount(): int
+}
+class TradeProcessor {
+  - tradeDataProvider: ITradeDataProvider
+  - tradeParser: ITradeParser
+  - tradeStorage: ITradeStorage
+  + TradeProcessor(parser: ITradeParser, storage: ITradeStorage, dataProvider: ITradeDataProvider)
+  + ProcessTrades(stream: Stream): void
+}
+class TradeRecord {
+  + Id: int
+  + SourceCurrency: string
+  + DestinationCurrency: string
+  + Lots: float
+  + Price: decimal
+}
 
 ITradeDataProvider <|.. TradeDataProvider
 ITradeParser <|.. TradeParser
