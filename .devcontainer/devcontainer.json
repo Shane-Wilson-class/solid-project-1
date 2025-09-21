@@ -18,7 +18,8 @@
         "icsharpcode.ilspy-vscode",
         "patcx.vscode-nuget-gallery",
         "ryanluker.vscode-coverage-gutters",
-        "humao.rest-client"
+        "humao.rest-client",
+        "bierner.markdown-mermaid"
       ]
     }
   },
