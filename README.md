@@ -1,6 +1,6 @@
 ﻿### CS236 Project 1: Updating TradeProcessor Class
 
-> **📋 Assignment Status**: This repository contains the **starting template** for the assignment. The current code represents the "Before" state that violates SOLID principles. Your task is to refactor this code to follow the Single Responsibility Principle (SRP) and implement the facade pattern as described below.
+> This repository contains the **starting template** for the assignment. The current code represents the "Before" state that violates SOLID principles. Your task is to refactor this code to follow the Single Responsibility Principle (SRP) and implement the facade pattern as described below.
 
 #### Overview
 
@@ -283,29 +283,6 @@ private static void Main()
 - This demonstrates **Dependency Inversion Principle** in action
 - The code is now fully testable and follows all **SOLID principles**
 
-### Automated Tests
-
-This repository includes a full NUnit test project to guide and verify your SOLID refactor.
-
-- Test project: `solid-project-1.Tests`
-- Test runner: `dotnet test`
-- Test framework: NUnit + Moq (for mocking)
-- Coverage: coverlet.collector (optional)
-
-#### How to run tests
-
-From the repository root:
-
-```bash
-# Run all tests in the test project
-dotnet test solid-project-1.Tests/solid-project-1.Tests.csproj
-
-# (Optional) Collect code coverage
-dotnet test solid-project-1.Tests/solid-project-1.Tests.csproj -p:CollectCoverage=true
-```
-
-You can also run tests from your IDE’s Test Explorer (Rider/VS/VS Code with C# extensions).
-
 #### Progressive Test Enabling
 
 Tests are organized to match the learning steps. Start with the already-enabled tests, then progressively uncomment additional tests as you implement each step:
@@ -317,7 +294,3 @@ Tests are organized to match the learning steps. Start with the already-enabled 
 See the detailed testing guide for exact file-by-file instructions:
 
 - `solid-project-1.Tests/README-Tests.md`
-
-### Diagrams
-
-The “Before” and “After” class diagrams are embedded above using Mermaid so they render inline on GitHub and in modern Markdown viewers. These versions replace the previous PlantUML-generated PNG images and stay in sync with the codebase.
