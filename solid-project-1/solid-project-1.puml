@@ -9,11 +9,11 @@ interface ITradeParser
 }
 interface ITradeStorage
 {
-  + void Persist(List<TradeRecord> trades)
+  + string Persist(List<TradeRecord> trades)
 }
 
 class TradeStorage {
-+ void Persist(List<TradeRecord> trades)
++ string Persist(List<TradeRecord> trades)
 }
 
 class TradeDataProvider {
