@@ -35,28 +35,7 @@ public static class TradeProcessor
         Console.WriteLine(statusMessage);
     }
 
-    private static IEnumerable<TradeRecord> Parse(List<string> lines)
-    {
-        var trades = new List<TradeRecord>();
-        var lineCount = 1;
-        foreach (var line in lines)
-        {
-            var fields = line.Split([',']).ToList();
-
-            if (!ValidateTradeData(fields, lineCount))
-            {
-                continue;
-            }
-
-            var trade = MapTradeDataToTradeRecord(fields);
-
-            trades.Add(trade);
-
-            lineCount++;
-        }
-
-        return trades;
-    }
+    
 
     private static TradeRecord MapTradeDataToTradeRecord(IReadOnlyList<string> fields)
     {
