@@ -25,7 +25,8 @@ public static class TradeProcessor
 
     public static void ProcessTrades(Stream stream)
     {
-        var lines = ReadTradData(stream);
+        var dataProvider = new TradeDataProvider();
+        var lines = dataProvider.GetTradeData(stream);
 
         var trades = Parse(lines);
 
@@ -120,16 +121,5 @@ public static class TradeProcessor
         return $"INFO: {trades.Count()} trades processed";
     }
 
-    private static List<string> ReadTradData(Stream stream)
-    {
-        var lines = new List<string>();
-        using var reader = new StreamReader(stream);
-        string line;
-        while ((line = reader.ReadLine()) != null)
-        {
-            lines.Add(line);
-        }
-
-        return lines;
-    }
+    
 }
