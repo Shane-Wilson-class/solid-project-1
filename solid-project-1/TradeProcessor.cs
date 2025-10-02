@@ -28,7 +28,8 @@ public static class TradeProcessor
         var dataProvider = new TradeDataProvider();
         var lines = dataProvider.GetTradeData(stream);
 
-        var trades = Parse(lines);
+        var parser = new TradeParser();
+        var trades = parser.Parse(lines);
 
         var statusMessage = StoreTrades(trades);
         Console.WriteLine(statusMessage);
