@@ -31,7 +31,8 @@ public static class TradeProcessor
         var parser = new TradeParser();
         var trades = parser.Parse(lines);
 
-        var statusMessage = StoreTrades(trades);
+        var storage = new TradeStorage();
+        var statusMessage = storage.StoreTrades(trades);
         Console.WriteLine(statusMessage);
     }
 
@@ -85,21 +86,7 @@ public static class TradeProcessor
         return true;
     }
 
-    private static string StoreTrades(IEnumerable<TradeRecord> trades)
-    {
-        var databaseRepository = new DatabaseRepository();
-
-        // Clear existing trades before inserting new ones to prevent duplicate trade records
-        // from accumulating when the application is run multiple times. This ensures the
-        // database contains only the current set of trades from the input file, making the
-        // behavior predictable for educational purposes.
-        databaseRepository.ClearAllTrades();
-
-        // Insert all trades using the repository
-        databaseRepository.InsertTrades(trades);
-
-        return $"INFO: {trades.Count()} trades processed";
-    }
+    
 
     
 }
