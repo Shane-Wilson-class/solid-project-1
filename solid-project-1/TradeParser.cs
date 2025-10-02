@@ -5,6 +5,7 @@ namespace solid_project_1
 {
     public class TradeParser
     {
+        private const float LotSize = 100;
         public IEnumerable<TradeRecord> Parse(List<string> lines)
         {
             var trades = new List<TradeRecord>();
@@ -18,7 +19,7 @@ namespace solid_project_1
                     continue;
                 }
 
-                var trade = TradeProcessor.MapTradeDataToTradeRecord(fields);
+                var trade = MapTradeDataToTradeRecord(fields);
 
                 trades.Add(trade);
 
@@ -27,5 +28,22 @@ namespace solid_project_1
 
             return trades;
         }
+        public TradeRecord MapTradeDataToTradeRecord(IReadOnlyList<string> fields)
+    {
+        var sourceCurrencyCode = fields[0].Substring(0, 3);
+        var destinationCurrencyCode = fields[0].Substring(3, 3);
+        var tradeAmount = int.Parse(fields[1]);
+        var tradePrice = decimal.Parse(fields[2]);
+
+        var tradeRecord = new TradeRecord
+        {
+            SourceCurrency = sourceCurrencyCode,
+            DestinationCurrency = destinationCurrencyCode,
+            Lots = tradeAmount / LotSize,
+            Price = tradePrice
+        };
+
+        return tradeRecord;
+    }
     }
 }
