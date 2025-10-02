@@ -8,3 +8,4 @@ namespace solid_project_1
         List<string> GetTradeData(Stream stream);
     }
 }
+

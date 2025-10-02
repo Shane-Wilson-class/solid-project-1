@@ -3,7 +3,7 @@ using System.IO;
 
 namespace solid_project_1
 {
-    public class TradeDataProvider
+    public class TradeDataProvider : ITradeDataProvider
     {
         public List<string> GetTradeData(Stream stream)
         {

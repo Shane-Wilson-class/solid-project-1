@@ -10,7 +10,7 @@ namespace solid_project_1;
 /// Students will learn to abstract this behind an interface as part of applying
 /// the Dependency Inversion Principle.
 /// </summary>
-public class DatabaseRepository
+public class DatabaseRepository : IDatabaseRepository
 {
     private readonly string _databasePath;
 
