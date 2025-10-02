@@ -35,42 +35,4 @@ public static class TradeProcessor
         var statusMessage = storage.StoreTrades(trades);
         Console.WriteLine(statusMessage);
     }
-
-    
-
-    
-
-    private static bool ValidateTradeData(IReadOnlyList<string> fields, int currentLine)
-    {
-        if (fields.Count != 3)
-        {
-            Console.WriteLine($"WARN: Line {currentLine} malformed. Only {fields.Count} field(s) found.");
-            return false;
-        }
-
-        if (fields[0].Length != 6)
-        {
-            Console.WriteLine($"WARN: Trade currencies on line {currentLine} malformed: '{fields[0]}'");
-            return false;
-        }
-
-        if (!int.TryParse(fields[1], out _))
-        {
-            Console.WriteLine($"WARN: Trade amount on line {currentLine} not a valid integer: '{fields[1]}'");
-            return false;
-        }
-
-
-        if (!decimal.TryParse(fields[2], out _))
-        {
-            Console.WriteLine($"WARN: Trade price on line {currentLine} not a valid decimal: '{fields[2]}'");
-            return false;
-        }
-
-        return true;
-    }
-
-    
-
-    
 }
