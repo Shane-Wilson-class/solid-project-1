@@ -19,20 +19,18 @@ namespace solid_project_1;
 ///     When the database changes in any way.
 ///     Example from Adaptive Code: Agile coding with design patterns and SOLID principles 2nd Edition, by McLean Hall, Gary
 /// </summary>
-public static class TradeProcessor
+public class TradeProcessor
 {
-    private const float LotSize = 100;
-
-    public static void ProcessTrades(Stream stream)
+    public void ProcessTrades(Stream stream)
     {
-        var dataProvider = new TradeDataProvider();
-        var lines = dataProvider.GetTradeData(stream);
+        var _tradeDataProvider = new TradeDataProvider();
+        var lines = _tradeDataProvider.GetTradeData(stream);
 
-        var parser = new TradeParser();
-        var trades = parser.Parse(lines);
+        var _tradeParser = new TradeParser();
+        var trades = _tradeParser.Parse(lines);
 
-        var storage = new TradeStorage();
-        var statusMessage = storage.StoreTrades(trades);
+        var _tradeStorage = new TradeStorage();
+        var statusMessage = _tradeStorage.Persist(trades);
         Console.WriteLine(statusMessage);
     }
 }
